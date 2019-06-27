@@ -1,8 +1,9 @@
 package com.github.intellectualsites.plotsquared.plot.commands;
 
 import com.github.intellectualsites.plotsquared.commands.Command;
+import com.github.intellectualsites.plotsquared.commands.CommandCaller;
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
-import com.github.intellectualsites.plotsquared.plot.config.C;
+import com.github.intellectualsites.plotsquared.plot.config.Captions;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 import com.github.intellectualsites.plotsquared.plot.object.RunnableVal2;
 import com.github.intellectualsites.plotsquared.plot.object.RunnableVal3;
@@ -18,7 +19,7 @@ public class Help extends Command {
         super(parent, true);
     }
 
-    @Override public boolean canExecute(PlotPlayer player, boolean message) {
+    @Override public boolean canExecute(CommandCaller player, boolean message) {
         return true;
     }
 
@@ -50,11 +51,11 @@ public class Help extends Command {
                 }
                 return;
             default:
-                C.COMMAND_SYNTAX.send(player, getUsage());
+                Captions.COMMAND_SYNTAX.send(player, getUsage());
         }
     }
 
-    public void displayHelp(PlotPlayer player, String cat, int page) {
+    public void displayHelp(CommandCaller player, String cat, int page) {
         CommandCategory catEnum = null;
         if (cat != null) {
             if (StringMan.isEqualIgnoreCase(cat, "all")) {
@@ -74,15 +75,15 @@ public class Help extends Command {
         }
         if (cat == null && page == 0) {
             StringBuilder builder = new StringBuilder();
-            builder.append(C.HELP_HEADER.s());
+            builder.append(Captions.HELP_HEADER.s());
             for (CommandCategory c : CommandCategory.values()) {
                 builder.append("\n" + StringMan
-                    .replaceAll(C.HELP_INFO_ITEM.s(), "%category%", c.toString().toLowerCase(),
-                        "%category_desc%", c.toString()));
+                    .replaceAll(Captions.HELP_INFO_ITEM.s(), "%category%",
+                        c.toString().toLowerCase(), "%category_desc%", c.toString()));
             }
-            builder.append("\n").append(C.HELP_INFO_ITEM.s().replaceAll("%category%", "all")
-                .replaceAll("%category_desc%", "Display all commands"));
-            builder.append("\n" + C.HELP_FOOTER.s());
+            builder.append("\n").append(Captions.HELP_INFO_ITEM.s().replaceAll("%category%", "all")
+                .replaceAll("%category_desc%", Captions.HELP_DISPLAY_ALL_COMMANDS.s()));
+            builder.append("\n" + Captions.HELP_FOOTER.s());
             MainUtil.sendMessage(player, builder.toString(), false);
             return;
         }

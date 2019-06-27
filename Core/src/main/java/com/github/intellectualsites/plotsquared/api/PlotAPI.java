@@ -2,7 +2,7 @@ package com.github.intellectualsites.plotsquared.api;
 
 import com.github.intellectualsites.plotsquared.configuration.file.YamlConfiguration;
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.C;
+import com.github.intellectualsites.plotsquared.plot.config.Captions;
 import com.github.intellectualsites.plotsquared.plot.flag.Flag;
 import com.github.intellectualsites.plotsquared.plot.flag.Flags;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
@@ -47,7 +47,7 @@ import java.util.UUID;
     }
 
     /**
-     * Return all plots for a player.
+     * Gets all plots for a player.
      *
      * @param player Player, whose plots to search for
      * @return all plots that a player owns
@@ -57,7 +57,7 @@ import java.util.UUID;
     }
 
     /**
-     * Add a plot world.
+     * Adds a plot world.
      *
      * @param plotArea Plot World Object
      * @see PlotSquared#addPlotArea(PlotArea)
@@ -67,13 +67,13 @@ import java.util.UUID;
     }
 
     /**
-     * Returns the PlotSquared configurations file.
+     * Gets the configuration file for this plugin.
      *
-     * @return main configuration
-     * @see PlotSquared#config
+     * @return the configuration file for PlotSquared
+     * =
      */
     public YamlConfiguration getConfig() {
-        return PlotSquared.get().config;
+        return PlotSquared.get().getConfig();
     }
 
     /**
@@ -84,16 +84,6 @@ import java.util.UUID;
      */
     public YamlConfiguration getStorage() {
         return PlotSquared.get().storage;
-    }
-
-    /**
-     * Gets the main class for this plugin. Only use this if you really need it.
-     *
-     * @return PlotSquared PlotSquared Main Class
-     * @see PlotSquared
-     */
-    public PlotSquared getMain() {
-        return PlotSquared.get();
     }
 
     /**
@@ -161,20 +151,20 @@ import java.util.UUID;
      * Send a message to the console. The message supports color codes.
      *
      * @param message the message
-     * @see MainUtil#sendConsoleMessage(C, String...)
+     * @see MainUtil#sendConsoleMessage(Captions, String...)
      */
     public void sendConsoleMessage(String message) {
         PlotSquared.log(message);
     }
 
     /**
-     * Send a message to the console.
+     * Sends a message to the console.
      *
      * @param caption the message
      * @see #sendConsoleMessage(String)
-     * @see C
+     * @see Captions
      */
-    public void sendConsoleMessage(C caption) {
+    public void sendConsoleMessage(Captions caption) {
         sendConsoleMessage(caption.s());
     }
 

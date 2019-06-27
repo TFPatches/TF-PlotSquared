@@ -1,9 +1,10 @@
 package com.github.intellectualsites.plotsquared.plot.commands;
 
 import com.github.intellectualsites.plotsquared.commands.Command;
+import com.github.intellectualsites.plotsquared.commands.CommandCaller;
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
-import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.C;
+import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.object.*;
 import com.github.intellectualsites.plotsquared.plot.util.CmdConfirm;
 import com.github.intellectualsites.plotsquared.plot.util.EconHandler;
@@ -68,7 +69,6 @@ public class MainCommand extends Command {
             new DebugPaste();
             new Unlink();
             new Kick();
-            new Rate();
             new DebugClaimTest();
             new Inbox();
             new Comment();
@@ -98,6 +98,14 @@ public class MainCommand extends Command {
             new SetHome();
             new Cluster();
             new DebugImportWorlds();
+
+            if (Settings.Ratings.USE_LIKES) {
+                new Like();
+                new Dislike();
+            } else {
+                new Rate();
+            }
+
             // Referenced commands
             instance.toggle = new Toggle();
             instance.help = new Help(instance);
@@ -126,27 +134,23 @@ public class MainCommand extends Command {
                 @Override
                 public void run(final Command cmd, final Runnable success, final Runnable failure) {
                     if (cmd.hasConfirmation(player)) {
-                        CmdConfirm.addPending(player, cmd.getUsage(), new Runnable() {
-                            @Override public void run() {
-                                if (EconHandler.manager != null) {
-                                    PlotArea area = player.getApplicablePlotArea();
-                                    if (area != null) {
-                                        Expression<Double> priceEval =
-                                            area.PRICES.get(cmd.getFullId());
-                                        Double price =
-                                            priceEval != null ? priceEval.evaluate(0d) : 0d;
-                                        if (price != null
-                                            && EconHandler.manager.getMoney(player) < price) {
-                                            if (failure != null) {
-                                                failure.run();
-                                            }
-                                            return;
+                        CmdConfirm.addPending(player, cmd.getUsage(), () -> {
+                            if (EconHandler.manager != null) {
+                                PlotArea area = player.getApplicablePlotArea();
+                                if (area != null) {
+                                    Expression<Double> priceEval = area.PRICES.get(cmd.getFullId());
+                                    Double price = priceEval != null ? priceEval.evaluate(0d) : 0d;
+                                    if (price != null
+                                        && EconHandler.manager.getMoney(player) < price) {
+                                        if (failure != null) {
+                                            failure.run();
                                         }
+                                        return;
                                     }
                                 }
-                                if (success != null) {
-                                    success.run();
-                                }
+                            }
+                            if (success != null) {
+                                success.run();
                             }
                         });
                         return;
@@ -180,13 +184,6 @@ public class MainCommand extends Command {
         return true;
     }
 
-    @Deprecated
-    /**
-     * @Deprecated legacy
-     */ public void addCommand(SubCommand command) {
-        PlotSquared.debug("Command registration is now done during instantiation");
-    }
-
     @Override public void execute(final PlotPlayer player, String[] args,
         RunnableVal3<Command, Runnable, Runnable> confirm,
         RunnableVal2<Command, CommandResult> whenDone) {
@@ -200,8 +197,8 @@ public class MainCommand extends Command {
             PlotArea area = player.getApplicablePlotArea();
             Plot newPlot = Plot.fromString(area, args[0]);
             if (newPlot != null && (player instanceof ConsolePlayer || newPlot.getArea()
-                .equals(area) || Permissions.hasPermission(player, C.PERMISSION_ADMIN)) && !newPlot
-                .isDenied(player.getUUID())) {
+                .equals(area) || Permissions.hasPermission(player, Captions.PERMISSION_ADMIN))
+                && !newPlot.isDenied(player.getUUID())) {
                 Location newLoc = newPlot.getCenter();
                 if (player.canTeleport(newLoc)) {
                     // Save meta
@@ -212,7 +209,7 @@ public class MainCommand extends Command {
                     player.setMeta(PlotPlayer.META_LOCATION, newLoc);
                     player.setMeta(PlotPlayer.META_LAST_PLOT, newPlot);
                 } else {
-                    C.BORDER.send(player);
+                    Captions.BORDER.send(player);
                 }
                 // Trim command
                 args = Arrays.copyOfRange(args, 1, args.length);
@@ -247,7 +244,7 @@ public class MainCommand extends Command {
                         args = Arrays.copyOfRange(args, 1, args.length);
                         break;
                     default:
-                        C.INVALID_COMMAND_FLAG.send(player);
+                        Captions.INVALID_COMMAND_FLAG.send(player);
                         return;
                 }
             }
@@ -260,9 +257,9 @@ public class MainCommand extends Command {
             e.printStackTrace();
             String message = e.getLocalizedMessage();
             if (message != null) {
-                C.ERROR.send(player, message);
+                Captions.ERROR.send(player, message);
             } else {
-                C.ERROR.send(player);
+                Captions.ERROR.send(player);
             }
         }
         // Reset command scope //
@@ -280,7 +277,7 @@ public class MainCommand extends Command {
         }
     }
 
-    @Override public boolean canExecute(PlotPlayer player, boolean message) {
+    @Override public boolean canExecute(CommandCaller player, boolean message) {
         return true;
     }
 }

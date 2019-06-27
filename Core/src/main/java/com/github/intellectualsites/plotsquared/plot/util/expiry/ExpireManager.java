@@ -1,7 +1,7 @@
 package com.github.intellectualsites.plotsquared.plot.util.expiry;
 
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.C;
+import com.github.intellectualsites.plotsquared.plot.config.Captions;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.database.DBFunc;
 import com.github.intellectualsites.plotsquared.plot.flag.FlagManager;
@@ -160,16 +160,21 @@ public class ExpireManager {
                 applicable.add(et);
             }
         }
+
         if (applicable.isEmpty()) {
             return new ArrayList<>();
         }
-        boolean shouldCheckAccountAge = false;
+
+        if (MainUtil.isServerOwned(plot)) {
+            return new ArrayList<>();
+        }
 
         long diff = getAge(plot);
         if (diff == 0) {
             return new ArrayList<>();
         }
         // Filter out non old plots
+        boolean shouldCheckAccountAge = false;
         for (int i = 0; i < applicable.size(); i++) {
             ExpiryTask et = applicable.poll();
             if (et.applies(diff)) {
@@ -329,8 +334,9 @@ public class ExpireManager {
             long diff = time - existing;
             if (diff > 0) {
                 Long account_age = this.account_age_cache.get(uuid);
-                if (account_age != null)
+                if (account_age != null) {
                     this.account_age_cache.put(uuid, account_age + diff);
+                }
             }
         }
     }
@@ -350,13 +356,13 @@ public class ExpireManager {
         for (UUID helper : plot.getTrusted()) {
             PlotPlayer player = UUIDHandler.getPlayer(helper);
             if (player != null) {
-                MainUtil.sendMessage(player, C.PLOT_REMOVED_USER, plot.toString());
+                MainUtil.sendMessage(player, Captions.PLOT_REMOVED_USER, plot.toString());
             }
         }
         for (UUID helper : plot.getMembers()) {
             PlotPlayer player = UUIDHandler.getPlayer(helper);
             if (player != null) {
-                MainUtil.sendMessage(player, C.PLOT_REMOVED_USER, plot.toString());
+                MainUtil.sendMessage(player, Captions.PLOT_REMOVED_USER, plot.toString());
             }
         }
         Set<Plot> plots = plot.getConnectedPlots();
@@ -365,12 +371,12 @@ public class ExpireManager {
         int changes = changed == null ? 0 : changed.changes_sd;
         int modified = changed == null ? 0 : changed.changes;
         PlotSquared.debug(
-            "$2[&5Expire&dManager$2] &cDeleted expired plot: " + plot + " User:" + plot.owner
+            "$2[&5Expire&dManager$2] &cDeleted expired plot: " + plot + " User:" + plot.getOwner()
                 + " Delta:" + changes + "/" + modified + " Connected: " + StringMan
                 .getString(plots));
         PlotSquared.debug("$4 - Area: " + plot.getArea());
         if (plot.hasOwner()) {
-            PlotSquared.debug("$4 - Owner: " + UUIDHandler.getName(plot.owner));
+            PlotSquared.debug("$4 - Owner: " + UUIDHandler.getName(plot.getOwner()));
         } else {
             PlotSquared.debug("$4 - Owner: Unowned");
         }
@@ -405,8 +411,8 @@ public class ExpireManager {
     }
 
     public long getAccountAge(Plot plot) {
-        if (!plot.hasOwner() || Objects.equals(DBFunc.EVERYONE, plot.owner)
-            || UUIDHandler.getPlayer(plot.owner) != null || plot.getRunning() > 0) {
+        if (!plot.hasOwner() || Objects.equals(DBFunc.EVERYONE, plot.getOwner())
+            || UUIDHandler.getPlayer(plot.getOwner()) != null || plot.getRunning() > 0) {
             return Long.MAX_VALUE;
         }
         long max = 0;
@@ -418,8 +424,8 @@ public class ExpireManager {
     }
 
     public long getAge(Plot plot) {
-        if (!plot.hasOwner() || Objects.equals(DBFunc.EVERYONE, plot.owner)
-            || UUIDHandler.getPlayer(plot.owner) != null || plot.getRunning() > 0) {
+        if (!plot.hasOwner() || Objects.equals(DBFunc.EVERYONE, plot.getOwner())
+            || UUIDHandler.getPlayer(plot.getOwner()) != null || plot.getRunning() > 0) {
             return 0;
         }
         Optional<?> keep = plot.getFlag(Flags.KEEP);

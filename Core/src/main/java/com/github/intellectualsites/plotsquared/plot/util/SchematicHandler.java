@@ -7,14 +7,28 @@ import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.flag.Flag;
 import com.github.intellectualsites.plotsquared.plot.flag.Flags;
 import com.github.intellectualsites.plotsquared.plot.generator.ClassicPlotWorld;
-import com.github.intellectualsites.plotsquared.plot.object.*;
+import com.github.intellectualsites.plotsquared.plot.object.ChunkLoc;
+import com.github.intellectualsites.plotsquared.plot.object.Location;
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
+import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
+import com.github.intellectualsites.plotsquared.plot.object.RegionWrapper;
+import com.github.intellectualsites.plotsquared.plot.object.RunnableVal;
 import com.github.intellectualsites.plotsquared.plot.object.schematic.Schematic;
 import com.github.intellectualsites.plotsquared.plot.util.block.LocalBlockQueue;
-import com.sk89q.jnbt.*;
+import com.sk89q.jnbt.CompoundTag;
+import com.sk89q.jnbt.NBTInputStream;
+import com.sk89q.jnbt.NBTOutputStream;
+import com.sk89q.jnbt.StringTag;
+import com.sk89q.jnbt.Tag;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.extent.clipboard.io.*;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.extent.clipboard.io.MCEditSchematicReader;
+import com.sk89q.worldedit.extent.clipboard.io.SpongeSchematicReader;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BaseBlock;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URL;
@@ -51,15 +65,16 @@ public abstract class SchematicHandler {
                 Iterator<Plot> i = plots.iterator();
                 final Plot plot = i.next();
                 i.remove();
-                String o = UUIDHandler.getName(plot.guessOwner());
-                if (o == null) {
-                    o = "unknown";
+                String owner = UUIDHandler.getName(plot.guessOwner());
+                if (owner == null) {
+                    owner = "unknown";
                 }
                 final String name;
                 if (namingScheme == null) {
-                    name = plot.getId().x + ";" + plot.getId().y + ',' + plot.getArea() + ',' + o;
+                    name =
+                        plot.getId().x + ";" + plot.getId().y + ',' + plot.getArea() + ',' + owner;
                 } else {
-                    name = namingScheme.replaceAll("%owner%", o)
+                    name = namingScheme.replaceAll("%owner%", owner)
                         .replaceAll("%id%", plot.getId().toString())
                         .replaceAll("%idx%", plot.getId().x + "")
                         .replaceAll("%idy%", plot.getId().y + "")
@@ -80,7 +95,7 @@ public abstract class SchematicHandler {
                             TaskManager.runTaskAsync(() -> {
                                 MainUtil.sendMessage(null, "&6ID: " + plot.getId());
                                 boolean result = SchematicHandler.manager
-                                    .save(value, directory + File.separator + name + ".schematic");
+                                    .save(value, directory + File.separator + name + ".schem");
                                 if (!result) {
                                     MainUtil
                                         .sendMessage(null, "&7 - Failed to save &c" + plot.getId());
@@ -250,10 +265,15 @@ public abstract class SchematicHandler {
                 throw new RuntimeException("Could not create schematic parent directory");
             }
         }
+        if (!name.endsWith(".schem") && !name.endsWith(".schematic")) {
+            name = name + ".schem";
+        }
         File file = MainUtil.getFile(PlotSquared.get().IMP.getDirectory(),
-            Settings.Paths.SCHEMATICS + File.separator + name + (name.endsWith(".schem") ?
-                "" :
-                ".schematic"));
+            Settings.Paths.SCHEMATICS + File.separator + name);
+        if (!file.exists()) {
+            file = MainUtil.getFile(PlotSquared.get().IMP.getDirectory(),
+                Settings.Paths.SCHEMATICS + File.separator + name + "atic");
+        }
         return getSchematic(file);
     }
 
@@ -262,12 +282,13 @@ public abstract class SchematicHandler {
      *
      * @return Immutable collection with schematic names
      */
-    public Collection<String> getShematicNames() {
+    public Collection<String> getSchematicNames() {
         final File parent =
             MainUtil.getFile(PlotSquared.get().IMP.getDirectory(), Settings.Paths.SCHEMATICS);
         final List<String> names = new ArrayList<>();
         if (parent.exists()) {
-            final String[] rawNames = parent.list((dir, name) -> name.endsWith(".schematic"));
+            final String[] rawNames =
+                parent.list((dir, name) -> name.endsWith(".schematic") || name.endsWith(".schem"));
             if (rawNames != null) {
                 final List<String> transformed = Arrays.stream(rawNames)
                     .map(rawName -> rawName.substring(0, rawName.length() - 10))
@@ -304,7 +325,7 @@ public abstract class SchematicHandler {
         return null;
     }
 
-    public Schematic getSchematic(URL url) {
+    public Schematic getSchematic(@NotNull URL url) {
         try {
             ReadableByteChannel rbc = Channels.newChannel(url.openStream());
             InputStream is = Channels.newInputStream(rbc);
@@ -315,10 +336,7 @@ public abstract class SchematicHandler {
         return null;
     }
 
-    public Schematic getSchematic(InputStream is) {
-        if (is == null) {
-            return null;
-        }
+    public Schematic getSchematic(@NotNull InputStream is) {
         try {
             SpongeSchematicReader ssr =
                 new SpongeSchematicReader(new NBTInputStream(new GZIPInputStream(is)));

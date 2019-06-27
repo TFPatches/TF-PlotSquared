@@ -308,7 +308,6 @@ import java.util.concurrent.atomic.AtomicInteger;
                         PlotSquared.debug("============ DATABASE ERROR ============");
                         PlotSquared.debug("There was an error updating the database.");
                         PlotSquared.debug(" - It will be corrected on shutdown");
-                        PlotSquared.debug("========================================");
                         e.printStackTrace();
                         PlotSquared.debug("========================================");
                     }
@@ -326,15 +325,15 @@ import java.util.concurrent.atomic.AtomicInteger;
                 PreparedStatement statement = null;
                 UniqueStatement task = null;
                 UniqueStatement lastTask = null;
-                Iterator<Entry<Plot, Queue<UniqueStatement>>> iter =
+                Iterator<Entry<Plot, Queue<UniqueStatement>>> iterator =
                     this.plotTasks.entrySet().iterator();
-                while (iter.hasNext()) {
+                while (iterator.hasNext()) {
                     try {
-                        Entry<Plot, Queue<UniqueStatement>> entry = iter.next();
+                        Entry<Plot, Queue<UniqueStatement>> entry = iterator.next();
                         Plot plot = entry.getKey();
                         Queue<UniqueStatement> tasks = entry.getValue();
                         if (tasks.isEmpty()) {
-                            iter.remove();
+                            iterator.remove();
                             continue;
                         }
                         task = tasks.remove();
@@ -352,7 +351,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                             task.set(statement);
                             task.addBatch(statement);
                             try {
-                                if (statement != null && statement.isClosed()) {
+                                if (statement.isClosed()) {
                                     statement = null;
                                 }
                             } catch (AbstractMethodError ignore) {
@@ -1001,14 +1000,16 @@ import java.util.concurrent.atomic.AtomicInteger;
                                             + "plot_settings`(`plot_plot_id`) VALUES(?)");
                                 }
                             });
-                            if (success != null)
+                            if (success != null) {
                                 addNotifyTask(success);
+                            }
                             return;
                         }
                     }
                 }
-                if (failure != null)
+                if (failure != null) {
                     failure.run();
+                }
             }
         });
     }
@@ -1613,17 +1614,17 @@ import java.util.concurrent.atomic.AtomicInteger;
                         PlotId plot_id = new PlotId(resultSet.getInt("plot_id_x"),
                             resultSet.getInt("plot_id_z"));
                         id = resultSet.getInt("id");
-                        String areaid = resultSet.getString("world");
-                        if (!areas.contains(areaid)) {
+                        String areaID = resultSet.getString("world");
+                        if (!areas.contains(areaID)) {
                             if (Settings.Enabled_Components.DATABASE_PURGER) {
                                 toDelete.add(id);
                                 continue;
                             } else {
-                                AtomicInteger value = noExist.get(areaid);
+                                AtomicInteger value = noExist.get(areaID);
                                 if (value != null) {
                                     value.incrementAndGet();
                                 } else {
-                                    noExist.put(areaid, new AtomicInteger(1));
+                                    noExist.put(areaID, new AtomicInteger(1));
                                 }
                             }
                         }
@@ -1655,7 +1656,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                                     .getTime();
                             } catch (ParseException e) {
                                 PlotSquared.debug(
-                                    "Could not parse date for plot: #" + id + "(" + areaid + ";"
+                                    "Could not parse date for plot: #" + id + "(" + areaID + ";"
                                         + plot_id + ") (" + parsable + ")");
                                 time = System.currentTimeMillis() + id;
                             }
@@ -1663,7 +1664,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                         Plot p = new Plot(plot_id, user, new HashSet<>(), new HashSet<>(),
                             new HashSet<>(), "", null, null, null,
                             new boolean[] {false, false, false, false}, time, id);
-                        HashMap<PlotId, Plot> map = newPlots.get(areaid);
+                        HashMap<PlotId, Plot> map = newPlots.get(areaID);
                         if (map != null) {
                             Plot last = map.put(p.getId(), p);
                             if (last != null) {
@@ -1677,7 +1678,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                             }
                         } else {
                             map = new HashMap<>();
-                            newPlots.put(areaid, map);
+                            newPlots.put(areaID, map);
                             map.put(p.getId(), p);
                         }
                         plots.put(id, p);
@@ -2537,11 +2538,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                     id = resultSet.getInt("id");
                     String areaid = resultSet.getString("world");
                     if (!areas.contains(areaid)) {
-                        if (noExist.containsKey(areaid)) {
-                            noExist.put(areaid, noExist.get(areaid) + 1);
-                        } else {
-                            noExist.put(areaid, 1);
-                        }
+                        noExist.merge(areaid, 1, Integer::sum);
                     }
                     owner = resultSet.getString("owner");
                     user = uuids.get(owner);

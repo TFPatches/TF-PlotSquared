@@ -33,12 +33,25 @@ public class PlotId {
      * @throws IllegalArgumentException if the string does not contain a valid PlotId
      */
     @Nonnull public static PlotId fromString(@Nonnull String string) {
+        PlotId plot = fromStringOrNull(string);
+        if (plot == null)
+            throw new IllegalArgumentException("Cannot create PlotID. String invalid.");
+        return plot;
+    }
+
+    @Nullable public static PlotId fromStringOrNull(@Nonnull String string) {
         String[] parts = string.split("[;|,]");
         if (parts.length < 2) {
-            throw new IllegalArgumentException("Cannot create PlotID. String invalid.");
+            return null;
         }
-        int x = Integer.parseInt(parts[0]);
-        int y = Integer.parseInt(parts[1]);
+        int x;
+        int y;
+        try {
+            x = Integer.parseInt(parts[0]);
+            y = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
         return new PlotId(x, y);
     }
 
@@ -84,6 +97,10 @@ public class PlotId {
             }
             return new PlotId(x + 1, y);
         }
+    }
+
+    public PlotId getRelative(Direction direction) {
+        return getRelative(direction.getIndex());
     }
 
     /**
