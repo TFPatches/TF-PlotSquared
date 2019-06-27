@@ -1,7 +1,7 @@
 package com.github.intellectualsites.plotsquared.bukkit.listeners;
 
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.object.Location;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
@@ -59,45 +59,48 @@ import static com.github.intellectualsites.plotsquared.plot.util.ReflectionUtils
         for (World world : Bukkit.getWorlds()) {
             world.setAutoSave(false);
         }
-        TaskManager.runTaskRepeat(() -> {
-            try {
-                HashSet<Chunk> toUnload = new HashSet<>();
-                for (World world : Bukkit.getWorlds()) {
-                    String worldName = world.getName();
-                    if (!PlotSquared.get().hasPlotArea(worldName)) {
-                        continue;
-                    }
-                    Object w = world.getClass().getDeclaredMethod("getHandle").invoke(world);
-                    Object chunkMap = w.getClass().getDeclaredMethod("getPlayerChunkMap").invoke(w);
-                    Method methodIsChunkInUse =
-                        chunkMap.getClass().getDeclaredMethod("isChunkInUse", int.class, int.class);
-                    Chunk[] chunks = world.getLoadedChunks();
-                    for (Chunk chunk : chunks) {
-                        if ((boolean) methodIsChunkInUse
-                            .invoke(chunkMap, chunk.getX(), chunk.getZ())) {
+        TaskManager.runTaskRepeat(new Runnable() {
+            @Override public void run() {
+                try {
+                    HashSet<Chunk> toUnload = new HashSet<>();
+                    for (World world : Bukkit.getWorlds()) {
+                        String worldName = world.getName();
+                        if (!PlotSquared.get().hasPlotArea(worldName)) {
                             continue;
                         }
-                        int x = chunk.getX();
-                        int z = chunk.getZ();
-                        if (!shouldSave(worldName, x, z)) {
-                            unloadChunk(worldName, chunk, false);
-                            continue;
+                        Object w = world.getClass().getDeclaredMethod("getHandle").invoke(world);
+                        Object chunkMap =
+                            w.getClass().getDeclaredMethod("getPlayerChunkMap").invoke(w);
+                        Method methodIsChunkInUse = chunkMap.getClass()
+                            .getDeclaredMethod("isChunkInUse", int.class, int.class);
+                        Chunk[] chunks = world.getLoadedChunks();
+                        for (Chunk chunk : chunks) {
+                            if ((boolean) methodIsChunkInUse
+                                .invoke(chunkMap, chunk.getX(), chunk.getZ())) {
+                                continue;
+                            }
+                            int x = chunk.getX();
+                            int z = chunk.getZ();
+                            if (!shouldSave(worldName, x, z)) {
+                                unloadChunk(worldName, chunk, false);
+                                continue;
+                            }
+                            toUnload.add(chunk);
                         }
-                        toUnload.add(chunk);
                     }
-                }
-                if (toUnload.isEmpty()) {
-                    return;
-                }
-                long start = System.currentTimeMillis();
-                for (Chunk chunk : toUnload) {
-                    if (System.currentTimeMillis() - start > 5) {
+                    if (toUnload.isEmpty()) {
                         return;
                     }
-                    chunk.unload(true);
+                    long start = System.currentTimeMillis();
+                    for (Chunk chunk : toUnload) {
+                        if (System.currentTimeMillis() - start > 5) {
+                            return;
+                        }
+                        chunk.unload(true, false);
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
-            } catch (Throwable e) {
-                e.printStackTrace();
             }
         }, 1);
     }
@@ -108,20 +111,20 @@ import static com.github.intellectualsites.plotsquared.plot.util.ReflectionUtils
         }
         Object c = this.methodGetHandleChunk.of(chunk).call();
         RefField.RefExecutor field = this.mustSave.of(c);
-        if ((Boolean) field.get()) {
+        if ((Boolean) field.get() == true) {
             field.set(false);
             if (chunk.isLoaded()) {
                 ignoreUnload = true;
-                chunk.unload(false);
+                chunk.unload(false, false);
                 ignoreUnload = false;
             }
         }
         return true;
     }
 
-    public boolean shouldSave(String world, int chunkX, int chunkZ) {
-        int x = chunkX << 4;
-        int z = chunkZ << 4;
+    public boolean shouldSave(String world, int X, int Z) {
+        int x = X << 4;
+        int z = Z << 4;
         int x2 = x + 15;
         int z2 = z + 15;
         Plot plot = new Location(world, x, 1, z).getOwnedPlotAbs();
@@ -148,8 +151,8 @@ import static com.github.intellectualsites.plotsquared.plot.util.ReflectionUtils
         if (ignoreUnload) {
             return;
         }
-        Chunk chunk = event.getChunk();
         if (Settings.Chunk_Processor.AUTO_TRIM) {
+            Chunk chunk = event.getChunk();
             String world = chunk.getWorld().getName();
             if (PlotSquared.get().hasPlotArea(world)) {
                 if (unloadChunk(world, chunk, true)) {
@@ -158,7 +161,7 @@ import static com.github.intellectualsites.plotsquared.plot.util.ReflectionUtils
             }
         }
         if (processChunk(event.getChunk(), true)) {
-            chunk.setForceLoaded(true);
+            event.setCancelled(true);
         }
     }
 
@@ -219,37 +222,39 @@ import static com.github.intellectualsites.plotsquared.plot.util.ReflectionUtils
     private void cleanChunk(final Chunk chunk) {
         TaskManager.index.incrementAndGet();
         final Integer currentIndex = TaskManager.index.get();
-        Integer task = TaskManager.runTaskRepeat(() -> {
-            if (!chunk.isLoaded()) {
-                Bukkit.getScheduler().cancelTask(TaskManager.tasks.get(currentIndex));
-                TaskManager.tasks.remove(currentIndex);
-                PlotSquared
-                    .debug(Captions.PREFIX.s() + "&aSuccessfully processed and unloaded chunk!");
-                chunk.unload(true);
-                return;
-            }
-            BlockState[] tiles = chunk.getTileEntities();
-            if (tiles.length == 0) {
-                Bukkit.getScheduler().cancelTask(TaskManager.tasks.get(currentIndex));
-                TaskManager.tasks.remove(currentIndex);
-                PlotSquared
-                    .debug(Captions.PREFIX.s() + "&aSuccessfully processed and unloaded chunk!");
-                chunk.unload(true);
-                return;
-            }
-            long start = System.currentTimeMillis();
-            int i = 0;
-            while (System.currentTimeMillis() - start < 250) {
-                if (i >= tiles.length) {
+        Integer task = TaskManager.runTaskRepeat(new Runnable() {
+            @Override public void run() {
+                if (!chunk.isLoaded()) {
                     Bukkit.getScheduler().cancelTask(TaskManager.tasks.get(currentIndex));
                     TaskManager.tasks.remove(currentIndex);
-                    PlotSquared.debug(
-                        Captions.PREFIX.s() + "&aSuccessfully processed and unloaded chunk!");
-                    chunk.unload(true);
+                    PlotSquared
+                        .debug(C.PREFIX.s() + "&aSuccessfully processed and unloaded chunk!");
+                    chunk.unload(true, true);
                     return;
                 }
-                tiles[i].getBlock().setType(Material.AIR, false);
-                i++;
+                BlockState[] tiles = chunk.getTileEntities();
+                if (tiles.length == 0) {
+                    Bukkit.getScheduler().cancelTask(TaskManager.tasks.get(currentIndex));
+                    TaskManager.tasks.remove(currentIndex);
+                    PlotSquared
+                        .debug(C.PREFIX.s() + "&aSuccessfully processed and unloaded chunk!");
+                    chunk.unload(true, true);
+                    return;
+                }
+                long start = System.currentTimeMillis();
+                int i = 0;
+                while (System.currentTimeMillis() - start < 250) {
+                    if (i >= tiles.length) {
+                        Bukkit.getScheduler().cancelTask(TaskManager.tasks.get(currentIndex));
+                        TaskManager.tasks.remove(currentIndex);
+                        PlotSquared
+                            .debug(C.PREFIX.s() + "&aSuccessfully processed and unloaded chunk!");
+                        chunk.unload(true, true);
+                        return;
+                    }
+                    tiles[i].getBlock().setType(Material.AIR, false);
+                    i++;
+                }
             }
         }, 5);
         TaskManager.tasks.put(currentIndex, task);
@@ -268,14 +273,14 @@ import static com.github.intellectualsites.plotsquared.plot.util.ReflectionUtils
                 }
             }
             PlotSquared.debug(
-                Captions.PREFIX.s() + "&a detected unsafe chunk and processed: " + (chunk.getX()
-                    << 4) + "," + (chunk.getX() << 4));
+                C.PREFIX.s() + "&a detected unsafe chunk and processed: " + (chunk.getX() << 4)
+                    + "," + (chunk.getX() << 4));
         }
         if (tiles.length > Settings.Chunk_Processor.MAX_TILES) {
             if (unload) {
                 PlotSquared.debug(
-                    Captions.PREFIX.s() + "&c detected unsafe chunk: " + (chunk.getX() << 4) + ","
-                        + (chunk.getX() << 4));
+                    C.PREFIX.s() + "&c detected unsafe chunk: " + (chunk.getX() << 4) + "," + (
+                        chunk.getX() << 4));
                 cleanChunk(chunk);
                 return true;
             }

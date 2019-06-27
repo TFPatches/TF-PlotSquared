@@ -2,15 +2,11 @@ package com.github.intellectualsites.plotsquared.plot.commands;
 
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Configuration;
 import com.github.intellectualsites.plotsquared.plot.config.ConfigurationNode;
 import com.github.intellectualsites.plotsquared.plot.generator.GeneratorWrapper;
-import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
-import com.github.intellectualsites.plotsquared.plot.object.PlotMessage;
-import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
-import com.github.intellectualsites.plotsquared.plot.object.SetupObject;
+import com.github.intellectualsites.plotsquared.plot.object.*;
 import com.github.intellectualsites.plotsquared.plot.util.MainUtil;
 import com.github.intellectualsites.plotsquared.plot.util.SetupUtils;
 import com.github.intellectualsites.plotsquared.plot.util.StringMan;
@@ -47,7 +43,7 @@ import java.util.Map.Entry;
             object = new SetupObject();
             player.setMeta("setup", object);
             SetupUtils.manager.updateGenerators();
-            sendMessage(player, Captions.SETUP_INIT);
+            sendMessage(player, C.SETUP_INIT);
             displayGenerators(player);
             return false;
         }
@@ -61,9 +57,8 @@ import java.util.Map.Entry;
                 if (object.setup_index > 0) {
                     object.setup_index--;
                     ConfigurationNode node = object.step[object.setup_index];
-                    sendMessage(player, Captions.SETUP_STEP, object.setup_index + 1,
-                        node.getDescription(), node.getType().getType(),
-                        String.valueOf(node.getDefaultValue()));
+                    sendMessage(player, C.SETUP_STEP, object.setup_index + 1, node.getDescription(),
+                        node.getType().getType(), String.valueOf(node.getDefaultValue()));
                     return false;
                 } else if (object.current > 0) {
                     object.current--;
@@ -80,7 +75,7 @@ import java.util.Map.Entry;
                             .join(SetupUtils.generators.keySet(), prefix)
                             .replaceAll(PlotSquared.imp().getPluginName(),
                                 "&2" + PlotSquared.imp().getPluginName()));
-                    sendMessage(player, Captions.SETUP_INIT);
+                    sendMessage(player, C.SETUP_INIT);
                     return false;
                 }
                 object.setupGenerator = args[0];
@@ -134,9 +129,8 @@ import java.util.Map.Entry;
                         return true;
                     }
                     ConfigurationNode step = object.step[object.setup_index];
-                    sendMessage(player, Captions.SETUP_STEP, object.setup_index + 1,
-                        step.getDescription(), step.getType().getType(),
-                        String.valueOf(step.getDefaultValue()));
+                    sendMessage(player, C.SETUP_STEP, object.setup_index + 1, step.getDescription(),
+                        step.getType().getType(), String.valueOf(step.getDefaultValue()));
                 } else {
                     if (gen.isFull()) {
                         object.plotManager = object.setupGenerator;
@@ -237,9 +231,8 @@ import java.util.Map.Entry;
                         .getSettingNodes();
                 }
                 ConfigurationNode step = object.step[object.setup_index];
-                sendMessage(player, Captions.SETUP_STEP, object.setup_index + 1,
-                    step.getDescription(), step.getType().getType(),
-                    String.valueOf(step.getDefaultValue()));
+                sendMessage(player, C.SETUP_STEP, object.setup_index + 1, step.getDescription(),
+                    step.getType().getType(), String.valueOf(step.getDefaultValue()));
                 break;
             }
             case 6:  // world setup
@@ -251,9 +244,8 @@ import java.util.Map.Entry;
                 }
                 ConfigurationNode step = object.step[object.setup_index];
                 if (args.length < 1) {
-                    sendMessage(player, Captions.SETUP_STEP, object.setup_index + 1,
-                        step.getDescription(), step.getType().getType(),
-                        String.valueOf(step.getDefaultValue()));
+                    sendMessage(player, C.SETUP_STEP, object.setup_index + 1, step.getDescription(),
+                        step.getType().getType(), String.valueOf(step.getDefaultValue()));
                     return false;
                 }
 
@@ -261,10 +253,10 @@ import java.util.Map.Entry;
                 try {
                     valid = step.isValid(args[0]);
                 } catch (final Configuration.UnsafeBlockException e) {
-                    Captions.NOT_ALLOWED_BLOCK.send(player, e.getUnsafeBlock().toString());
+                    C.NOT_ALLOWED_BLOCK.send(player, e.getUnsafeBlock().toString());
                 }
                 if (valid) {
-                    sendMessage(player, Captions.SETUP_VALID_ARG, step.getConstant(), args[0]);
+                    sendMessage(player, C.SETUP_VALID_ARG, step.getConstant(), args[0]);
                     step.setValue(args[0]);
                     object.setup_index++;
                     if (object.setup_index == object.step.length) {
@@ -272,15 +264,13 @@ import java.util.Map.Entry;
                         return false;
                     }
                     step = object.step[object.setup_index];
-                    sendMessage(player, Captions.SETUP_STEP, object.setup_index + 1,
-                        step.getDescription(), step.getType().getType(),
-                        String.valueOf(step.getDefaultValue()));
+                    sendMessage(player, C.SETUP_STEP, object.setup_index + 1, step.getDescription(),
+                        step.getType().getType(), String.valueOf(step.getDefaultValue()));
                     return false;
                 } else {
-                    sendMessage(player, Captions.SETUP_INVALID_ARG, args[0], step.getConstant());
-                    sendMessage(player, Captions.SETUP_STEP, object.setup_index + 1,
-                        step.getDescription(), step.getType().getType(),
-                        String.valueOf(step.getDefaultValue()));
+                    sendMessage(player, C.SETUP_INVALID_ARG, args[0], step.getConstant());
+                    sendMessage(player, C.SETUP_STEP, object.setup_index + 1, step.getDescription(),
+                        step.getType().getType(), String.valueOf(step.getDefaultValue()));
                     return false;
                 }
             case 7:
@@ -312,7 +302,7 @@ import java.util.Map.Entry;
                     player.sendMessage("&cAn error occurred. See console for more information");
                     e.printStackTrace();
                 }
-                sendMessage(player, Captions.SETUP_FINISHED, object.world);
+                sendMessage(player, C.SETUP_FINISHED, object.world);
         }
         return false;
     }
@@ -349,7 +339,7 @@ import java.util.Map.Entry;
             return messages;
         }
 
-        @Override public boolean parseInput(String input) {
+        @Override public boolean parseInut(String input) {
             this.generator = input.toLowerCase();
             return true;
         }
@@ -389,7 +379,7 @@ import java.util.Map.Entry;
             return messages;
         }
 
-        @Override public boolean parseInput(String input) {
+        @Override public boolean parseInut(String input) {
             if (!WORLD_TYPES.keySet().contains(input.toLowerCase())) {
                 return false;
             }
@@ -420,7 +410,7 @@ import java.util.Map.Entry;
 
         public abstract Collection<PlotMessage> showDescriptionMessage();
 
-        public abstract boolean parseInput(String input);
+        public abstract boolean parseInut(String input);
 
         public final PlotMessage getUsage() {
             return new PlotMessage("Usage: ").color("$1")

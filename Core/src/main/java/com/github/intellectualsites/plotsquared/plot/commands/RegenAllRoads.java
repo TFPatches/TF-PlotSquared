@@ -2,7 +2,7 @@ package com.github.intellectualsites.plotsquared.plot.commands;
 
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.generator.HybridPlotManager;
 import com.github.intellectualsites.plotsquared.plot.generator.HybridUtils;
 import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
@@ -22,25 +22,24 @@ import com.github.intellectualsites.plotsquared.plot.util.MainUtil;
             try {
                 height = Integer.parseInt(args[1]);
             } catch (NumberFormatException ignored) {
-                MainUtil.sendMessage(player, Captions.NOT_VALID_NUMBER, "(0, 256)");
-                MainUtil.sendMessage(player, Captions.COMMAND_SYNTAX,
-                    "/plot regenallroads <world> [height]");
+                MainUtil.sendMessage(player, C.NOT_VALID_NUMBER, "(0, 256)");
+                MainUtil
+                    .sendMessage(player, C.COMMAND_SYNTAX, "/plot regenallroads <world> [height]");
                 return false;
             }
         } else if (args.length != 1) {
-            MainUtil.sendMessage(player, Captions.COMMAND_SYNTAX,
-                "/plot regenallroads <world> [height]");
+            MainUtil.sendMessage(player, C.COMMAND_SYNTAX, "/plot regenallroads <world> [height]");
             return false;
         }
         PlotArea area = PlotSquared.get().getPlotAreaByString(args[0]);
         if (area == null) {
-            Captions.NOT_VALID_PLOT_WORLD.send(player, args[0]);
+            C.NOT_VALID_PLOT_WORLD.send(player, args[0]);
             return false;
         }
         String name = args[0];
         PlotManager manager = area.getPlotManager();
         if (!(manager instanceof HybridPlotManager)) {
-            MainUtil.sendMessage(player, Captions.NOT_VALID_PLOT_WORLD);
+            MainUtil.sendMessage(player, C.NOT_VALID_PLOT_WORLD);
             return false;
         }
         //Set<ChunkLoc> chunks = ChunkManager.manager.getChunkChunks(name);

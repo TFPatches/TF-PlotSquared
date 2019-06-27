@@ -2,7 +2,6 @@ package com.github.intellectualsites.plotsquared.bukkit.object;
 
 import com.github.intellectualsites.plotsquared.plot.object.OfflinePlotPlayer;
 import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -20,7 +19,7 @@ public class BukkitOfflinePlayer implements OfflinePlotPlayer {
         this.player = player;
     }
 
-    @NotNull @Override public UUID getUUID() {
+    @Override public UUID getUUID() {
         return this.player.getUniqueId();
     }
 

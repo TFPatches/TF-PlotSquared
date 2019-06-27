@@ -15,6 +15,9 @@ import lombok.experimental.UtilityClass;
     private static int capNumeral(@NonNull final String flagName) {
         int i;
         switch (flagName) {
+            case "entity-cap":
+                i = 0;
+                break;
             case "mob-cap":
                 i = 3;
                 break;
@@ -30,7 +33,6 @@ import lombok.experimental.UtilityClass;
             case "misc-cap":
                 i = 5;
                 break;
-            case "entity-cap":
             default:
                 i = 0;
         }

@@ -1,44 +1,35 @@
 package com.github.intellectualsites.plotsquared.bukkit.util;
 
-import com.github.intellectualsites.plotsquared.plot.PlotSquared;
 import com.github.intellectualsites.plotsquared.plot.object.LegacyPlotBlock;
 import com.github.intellectualsites.plotsquared.plot.object.PlotBlock;
 import com.github.intellectualsites.plotsquared.plot.object.StringPlotBlock;
 import com.github.intellectualsites.plotsquared.plot.util.LegacyMappings;
 import com.github.intellectualsites.plotsquared.plot.util.StringComparison;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.bukkit.Bukkit;
+import lombok.*;
 import org.bukkit.Material;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Borrowed from https://github.com/Phoenix616/IDConverter/blob/master/mappings/src/main/java/de/themoep/idconverter/IdMappings.java
  * Original License:
  * <p>
- * Minecraft ID mappings Copyright (C) 2017  Max Lee (https://github.com/Phoenix616)
+ * Minecraft ID mappings
+ * Copyright (C) 2017  Max Lee (https://github.com/Phoenix616)
  * <p>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * <p>
- * You should have received a copy of the GNU General Public License along with this program.  If
- * not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public final class BukkitLegacyMappings extends LegacyMappings {
 
@@ -83,7 +74,7 @@ public final class BukkitLegacyMappings extends LegacyMappings {
             new LegacyBlock(19, 1, "sponge", "wet_sponge"), new LegacyBlock(20, "glass"),
             new LegacyBlock(21, "lapis_ore"), new LegacyBlock(22, "lapis_block"),
             new LegacyBlock(23, "dispenser"), new LegacyBlock(24, "sandstone"),
-            new LegacyBlock(24, 1, "sandstone", "chiseled_sandstone"),
+            new LegacyBlock(24, 1, "sandstone", "chisled_sandstone"),
             new LegacyBlock(24, 2, "sandstone", "cut_sandstone"), new LegacyBlock(25, "note_block"),
             new LegacyBlock(26, "bed_block"), new LegacyBlock(27, "powered_rail"),
             new LegacyBlock(28, "detector_rail"),
@@ -190,10 +181,10 @@ public final class BukkitLegacyMappings extends LegacyMappings {
             new LegacyBlock(95, 15, "stained_glass", "black_stained_glass"),
             new LegacyBlock(96, "trap_door", "oak_trapdoor"),
             new LegacyBlock(97, "monster_eggs", "infested_stone"),
-            new LegacyBlock(97, 1, "monster_eggs", "infested_cobblestone"),
+            new LegacyBlock(97, 1, "monster_eggs", "infested_coblestone"),
             new LegacyBlock(97, 2, "monster_eggs", "infested_stone_bricks"),
             new LegacyBlock(97, 3, "monster_eggs", "infested_mossy_stone_bricks"),
-            new LegacyBlock(97, 4, "monster_eggs", "infested_cracked_stone_bricks"),
+            new LegacyBlock(97, 4, "monster_eggs", "infested_crcked_stone_bricks"),
             new LegacyBlock(97, 5, "monster_eggs", "infested_chiseled_stone_bricks"),
             new LegacyBlock(98, "smooth_brick", "stone_bricks"),
             new LegacyBlock(98, 1, "smooth_brick", "mossy_stone_bricks"),
@@ -216,7 +207,7 @@ public final class BukkitLegacyMappings extends LegacyMappings {
             new LegacyBlock(100, 10, "huge_mushroom_2", "mushroom_stem"),
             new LegacyBlock(100, 14, "huge_mushroom_2"),
             new LegacyBlock(100, 15, "huge_mushroom_2"),
-            new LegacyBlock(101, "iron_fence", "iron_bars"),
+            new LegacyBlock(101, "iron_fence", "ironbars"),
             new LegacyBlock(102, "thin_glass", "glass_pane"), new LegacyBlock(103, "melon_block"),
             new LegacyBlock(104, "pumpkin_stem"), new LegacyBlock(105, "melon_stem"),
             new LegacyBlock(106, "vine"), new LegacyBlock(107, "fence_gate", "oak_fence_gate"),
@@ -549,7 +540,7 @@ public final class BukkitLegacyMappings extends LegacyMappings {
             new LegacyBlock(383, 5, "monster_egg", "wither_skeleton_spawn_egg"),
             new LegacyBlock(383, 6, "monster_egg", "stray_spawn_egg"),
             new LegacyBlock(383, 23, "monster_egg", "husk_spawn_egg"),
-            new LegacyBlock(383, 27, "monster_egg", "zombie_villager_spawn_egg"),
+            new LegacyBlock(383, 27, "monster_egg", "zombe_villager_spawn_egg"),
             new LegacyBlock(383, 28, "monster_egg", "skeleton_horse_spawn_egg"),
             new LegacyBlock(383, 29, "monster_egg", "zombie_horse_spawn_egg"),
             new LegacyBlock(383, 31, "monster_egg", "donkey_spawn_egg"),
@@ -672,6 +663,7 @@ public final class BukkitLegacyMappings extends LegacyMappings {
             new LegacyBlock(2266, "record_11", "music_disc_11"),
             new LegacyBlock(2267, "record_12", "music_disc_wait")};
 
+    // private static final Map<Integer, PlotBlock> LEGACY_ID_TO_STRING_PLOT_BLOCK = new HashMap<>();
     private static final Map<IdDataPair, PlotBlock> LEGACY_ID_AND_DATA_TO_STRING_PLOT_BLOCK =
         new HashMap<>();
     private static final Map<String, PlotBlock> NEW_STRING_TO_LEGACY_PLOT_BLOCK = new HashMap<>();
@@ -684,14 +676,9 @@ public final class BukkitLegacyMappings extends LegacyMappings {
         for (final Material material : Material.values()) {
             final String materialName = material.name().toLowerCase(Locale.ENGLISH);
             if (NEW_STRING_TO_LEGACY_PLOT_BLOCK.get(materialName) == null) {
-                try {
-                    final LegacyBlock missingBlock =
-                        new LegacyBlock(material.getId(), materialName, materialName);
-                    missing.add(missingBlock);
-                } catch (Exception e) {
-                    Bukkit.getLogger().severe(
-                        "Error creating legacy block: " + materialName + ". Possibly a new block.");
-                }
+                final LegacyBlock missingBlock =
+                    new LegacyBlock(material.getId(), materialName, materialName);
+                missing.add(missingBlock);
             }
         }
         addAll(missing);
@@ -699,6 +686,13 @@ public final class BukkitLegacyMappings extends LegacyMappings {
 
     private void addAll(@NonNull final Collection<LegacyBlock> blocks) {
         for (final LegacyBlock legacyBlock : blocks) {
+            // LEGACY_ID_TO_STRING_PLOT_BLOCK
+            //     .put(legacyBlock.getNumericalId(), legacyBlock.toStringPlotBlock());
+            /*if (legacyBlock.getDataValue() != 0) {
+                LEGACY_ID_AND_DATA_TO_STRING_PLOT_BLOCK
+                    .put(new IdDataPair(legacyBlock.getNumericalId(), legacyBlock.getDataValue()),
+                        legacyBlock.toStringPlotBlock());
+            } */
             LEGACY_ID_AND_DATA_TO_STRING_PLOT_BLOCK
                 .put(new IdDataPair(legacyBlock.getNumericalId(), legacyBlock.getDataValue()),
                     legacyBlock.toStringPlotBlock());
@@ -710,15 +704,7 @@ public final class BukkitLegacyMappings extends LegacyMappings {
             try {
                 material = Material.valueOf(legacyBlock.getNewName());
             } catch (final Exception e) {
-                try {
-                    material = Material.getMaterial(legacyBlock.getLegacyName(), true);
-                } catch (NoSuchMethodError error) {
-                    PlotSquared.log(
-                        "You can't use this version of PlotSquared on a server "
-                            + "less than Minecraft 1.13.2");
-                    Bukkit.shutdown();
-                    break;
-                }
+                material = Material.getMaterial(legacyBlock.getLegacyName(), true);
             }
             legacyBlock.material = material;
         }
@@ -737,10 +723,13 @@ public final class BukkitLegacyMappings extends LegacyMappings {
     }
 
     /**
-     * Try to find a legacy plot block by any means possible. Strategy: - Check if the name contains
-     * a namespace, if so, strip it - Check if there's a (new) material matching the name - Check if
-     * there's a legacy material matching the name - Check if there's a numerical ID matching the
-     * name - Return null if everything else fails
+     * Try to find a legacy plot block by any means possible.
+     * Strategy:
+     * - Check if the name contains a namespace, if so, strip it
+     * - Check if there's a (new) material matching the name
+     * - Check if there's a legacy material matching the name
+     * - Check if there's a numerical ID matching the name
+     * - Return null if everything else fails
      *
      * @param string String ID
      * @return LegacyBlock if found, else null
@@ -751,29 +740,19 @@ public final class BukkitLegacyMappings extends LegacyMappings {
         }
         String workingString = string;
         String[] parts = null;
-        IdDataPair idDataPair = null;
         if (string.contains(":")) {
             parts = string.split(":");
             if (parts.length > 1) {
                 if (parts[0].equalsIgnoreCase("minecraft")) {
                     workingString = parts[1];
                 } else {
-                    if (parts[0].matches("^\\d+$")) {
-                        idDataPair =
-                            new IdDataPair(Integer.parseInt(parts[0]), Integer.parseInt(parts[0]));
-                    } else {
-                        workingString = parts[0];
-                    }
+                    workingString = parts[0];
                 }
             }
-        } else if (string.matches("^\\d+$")) {
-            idDataPair = new IdDataPair(Integer.parseInt(string), 0);
         }
         PlotBlock plotBlock;
         if (NEW_STRING_TO_LEGACY_PLOT_BLOCK.keySet().contains(workingString.toLowerCase())) {
             return PlotBlock.get(workingString);
-        } else if ((plotBlock = fromLegacyToString(idDataPair)) != null) {
-            return plotBlock;
         } else if ((plotBlock = fromLegacyToString(workingString)) != null) {
             return plotBlock;
         } else {
@@ -793,13 +772,6 @@ public final class BukkitLegacyMappings extends LegacyMappings {
 
     public PlotBlock fromLegacyToString(final int id, final int data) {
         return LEGACY_ID_AND_DATA_TO_STRING_PLOT_BLOCK.get(new IdDataPair(id, data));
-    }
-
-    public PlotBlock fromLegacyToString(IdDataPair idDataPair) {
-        if (idDataPair == null) {
-            return null;
-        }
-        return LEGACY_ID_AND_DATA_TO_STRING_PLOT_BLOCK.get(idDataPair);
     }
 
     public PlotBlock fromLegacyToString(final String id) {

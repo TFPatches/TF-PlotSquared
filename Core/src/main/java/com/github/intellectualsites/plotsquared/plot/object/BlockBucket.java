@@ -1,14 +1,13 @@
 package com.github.intellectualsites.plotsquared.plot.object;
 
 import com.github.intellectualsites.plotsquared.configuration.serialization.ConfigurationSerializable;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Configuration;
-import com.github.intellectualsites.plotsquared.plot.object.collection.RandomCollection;
 import com.google.common.collect.ImmutableMap;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -21,14 +20,11 @@ import java.util.Map.Entry;
     implements Iterable<PlotBlock>, ConfigurationSerializable {
 
     private final Random random = new Random();
-    private final Map<PlotBlock, Double> blocks;
-
+    private final Map<Range, PlotBlock> ranges = new HashMap<>();
+    private final Map<PlotBlock, Integer> blocks;
     private final BucketIterator bucketIterator = new BucketIterator();
     private boolean compiled, singleItem;
     private PlotBlock head;
-
-    private RandomCollection<PlotBlock> randomBlocks;
-    private PlotBlock single;
 
     public BlockBucket() {
         this.blocks = new HashMap<>();
@@ -52,12 +48,6 @@ import java.util.Map.Entry;
     }
 
     public void addBlock(@NonNull final PlotBlock block, final int chance) {
-        addBlock(block, (double) chance);
-    }
-
-    private void addBlock(@NonNull final PlotBlock block, double chance) {
-        if (chance == -1)
-            chance = 1;
         this.blocks.put(block, chance);
         this.compiled = false;
         if (head == null) {
@@ -66,6 +56,9 @@ import java.util.Map.Entry;
     }
 
     public boolean isEmpty() {
+        if (isCompiled()) {
+            return ranges.isEmpty();
+        }
         return blocks.isEmpty();
     }
 
@@ -79,7 +72,7 @@ import java.util.Map.Entry;
         if (!isCompiled()) {
             this.compile();
         }
-        return Collections.unmodifiableCollection(this.blocks.keySet());
+        return Collections.unmodifiableCollection(this.ranges.values());
     }
 
     /**
@@ -119,24 +112,83 @@ import java.util.Map.Entry;
             return;
         }
 
-        this.compiled = true;
-        switch (blocks.size()) {
-            case 0:
-                single = null;
-                this.randomBlocks = null;
-                break;
-            case 1:
-                single = blocks.keySet().iterator().next();
-                this.randomBlocks = null;
-                break;
-            default:
-                single = null;
-                this.randomBlocks = RandomCollection.of(blocks, random);
-                break;
+        if (blocks.size() == 0) {
+            this.compiled = true;
+            return;
         }
+
+        if (blocks.size() == 1) {
+            this.ranges.put(new Range(0, 100, true), blocks.keySet().toArray(new PlotBlock[1])[0]);
+            this.compiled = true;
+            this.singleItem = true;
+            return;
+        }
+
+        final Map<PlotBlock, Integer> temp = new HashMap<>(blocks.size());
+        final List<PlotBlock> unassigned = new ArrayList<>(blocks.size());
+
+        int sum = 0;
+        for (final Map.Entry<PlotBlock, Integer> entry : blocks.entrySet()) {
+            if (entry.getValue() == -1) {
+                unassigned.add(entry.getKey());
+            } else {
+                sum += entry.getValue();
+                temp.put(entry.getKey(), entry.getValue());
+            }
+        }
+        //
+        // If this doesn't amount to 100 add it up to exactly 100.
+        //
+        if (sum < 100) {
+            final int remaining = 100 - sum;
+            if (unassigned.isEmpty()) {
+                // If there are no unassigned values, we just add it to the first value
+                final Entry<PlotBlock, Integer> entry = temp.entrySet().iterator().next();
+                temp.put(entry.getKey(), (entry.getValue() + 1 + remaining));
+            } else {
+                final int perUnassigned = remaining / unassigned.size();
+                for (final PlotBlock block : unassigned) {
+                    temp.put(block, perUnassigned);
+                    sum += perUnassigned;
+                }
+                // Make sure there isn't a tiny difference remaining
+                if (sum < 100) {
+                    final int difference = 100 - sum;
+                    temp.put(unassigned.get(0), perUnassigned + difference);
+                    sum = 100;
+                }
+            }
+        } else if (!unassigned.isEmpty()) {
+            C.BUCKET_ENTRIES_IGNORED.send(ConsolePlayer.getConsole());
+        }
+        //
+        // If the sum adds up to more than 100, divide all values
+        //
+        if (sum > 100) {
+            final double ratio = 100D / sum;
+            for (final Map.Entry<PlotBlock, Integer> entry : blocks.entrySet()) {
+                if (entry.getValue() == -1) {
+                    continue;
+                }
+                temp.put(entry.getKey(), (int) (entry.getValue() * ratio));
+            }
+        } else {
+            temp.forEach(temp::put);
+        }
+        int start = 0;
+        for (final Map.Entry<PlotBlock, Integer> entry : temp.entrySet()) {
+            final int rangeStart = start;
+            final int rangeEnd = rangeStart + entry.getValue();
+            start = rangeEnd + 1;
+            final Range range =
+                new Range(rangeStart, rangeEnd, unassigned.contains(entry.getKey()));
+            this.ranges.put(range, entry.getKey());
+        }
+        this.blocks.clear();
+        this.compiled = true;
     }
 
-    @NotNull @Override public Iterator<PlotBlock> iterator() {
+    @Override public Iterator<PlotBlock> iterator() {
         return this.bucketIterator;
     }
 
@@ -153,13 +205,19 @@ import java.util.Map.Entry;
         if (!isCompiled()) {
             this.compile();
         }
-        if (single != null) {
-            return single;
+        if (this.isEmpty()) {
+            return StringPlotBlock.EVERYTHING;
+        } else if (this.hasSingleItem()) {
+            return this.head;
         }
-        if (randomBlocks != null) {
-            return randomBlocks.next();
+        final int number = random.nextInt(101);
+        for (final Map.Entry<Range, PlotBlock> entry : ranges.entrySet()) {
+            if (entry.getKey().isInRange(number)) {
+                return entry.getValue();
+            }
         }
-        return StringPlotBlock.EVERYTHING;
+        // Didn't find a block? Try again
+        return getBlock();
     }
 
     @Override public String toString() {
@@ -167,14 +225,12 @@ import java.util.Map.Entry;
             compile();
         }
         final StringBuilder builder = new StringBuilder();
-        Iterator<Entry<PlotBlock, Double>> iterator = blocks.entrySet().iterator();
+        final Iterator<Entry<Range, PlotBlock>> iterator = this.ranges.entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry<PlotBlock, Double> entry = iterator.next();
-            PlotBlock block = entry.getKey();
-            builder.append(block.getRawId());
-            Double weight = entry.getValue();
-            if (weight != 1) {
-                builder.append(":").append(weight.intValue());
+            final Entry<Range, PlotBlock> entry = iterator.next();
+            builder.append(entry.getValue().getRawId());
+            if (!entry.getKey().isAutomatic()) {
+                builder.append(":").append(entry.getKey().getWeight());
             }
             if (iterator.hasNext()) {
                 builder.append(",");

@@ -139,11 +139,7 @@ public class DefaultPlotAreaManager implements PlotAreaManager {
                 return null;
             case 1:
                 PlotArea pa = this.plotAreas[0];
-                if (pa.contains(location)) {
-                    return pa;
-                } else {
-                    return null;
-                }
+                return pa.contains(location) ? pa : null;
             case 2:
             case 3:
             case 4:

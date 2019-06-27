@@ -7,14 +7,13 @@ import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 import com.github.intellectualsites.plotsquared.plot.uuid.UUIDWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.UUID;
 
 public class DefaultUUIDWrapper extends UUIDWrapper {
 
-    @NotNull @Override public UUID getUUID(PlotPlayer player) {
+    @Override public UUID getUUID(PlotPlayer player) {
         return ((BukkitPlayer) player).player.getUniqueId();
     }
 

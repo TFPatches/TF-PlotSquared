@@ -1,21 +1,14 @@
-repositories {
-    maven { url 'https://jitpack.io' }
+dependencies {
+    testCompile 'junit:junit:4.12'
+    compile 'org.yaml:snakeyaml:1.23'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
+    compileOnly 'org.projectlombok:lombok:1.18.4'
 }
 
-dependencies {
-    implementation 'org.yaml:snakeyaml:1.23'
-    //keep inline with Minecraft which uses gson 2.8.0
-    implementation 'com.google.code.gson:gson:2.8.0'
-    implementation("org.projectlombok:lombok:1.18.6")
-    compileOnly("org.projectlombok:lombok:1.18.6")
-    testCompileOnly("org.projectlombok:lombok:1.18.6")
-    annotationProcessor("org.projectlombok:lombok:1.18.6")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.6")
-    implementation 'net.kyori:text-adapter-bukkit:3.0.2'
-    implementation 'com.github.Sauilitired:Jenkins4J:2.0-SNAPSHOT'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.0'
-    implementation 'com.squareup.okio:okio:2.2.2'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
+repositories {
+    maven { url = "https://hub.spigotmc.org/nexus/content/groups/public/"}
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
 
 sourceCompatibility = 1.8
@@ -33,34 +26,34 @@ processResources {
     }
 }
 
-jar.setArchiveName("PlotSquared-API-${project.parent.version}.jar")
-jar.destinationDir = file '../mvn/com/github/intellectualsites/plotsquared/PlotSquared-API/' + project.parent.version
+jar.archiveName = "Plotsquared-Api-${project.parent.version}.jar"
+jar.destinationDir = file '../mvn/com/github/intellectualsites/plotsquared/Plotsquared-Api/' + project.parent.version
 task createPom {
     doLast {
         pom {
             project {
                 groupId 'com.github.intellectualsites.plotsquared'
-                artifactId 'PlotSquared-API'
+                artifactId 'Plotsquared'
                 version project.parent.version
             }
-        }.writeTo("../mvn/com/github/intellectualsites/plotsquared/PlotSquared-API/${project.parent.version}/PlotSquared-API-${project.parent.version}.pom")
+        }.writeTo("../mvn/com/github/intellectualsites/plotsquared/Plotsquared-Api/${project.parent.version}/Plotsquared-Api-${project.parent.version}.pom")
         pom {
             project {
                 groupId 'com.github.intellectualsites.plotsquared'
-                artifactId 'PlotSquared-API'
+                artifactId 'Plotsquared'
                 version 'latest'
             }
-        }.writeTo("../mvn/com/github/intellectualsites/plotsquared/PlotSquared-API/latest/PlotSquared-API-latest.pom")
+        }.writeTo("../mvn/com/github/intellectualsites/plotsquared/Plotsquared-Api/latest/Plotsquared-Api-latest.pom")
     }
 }
 
 task copyFiles {
     doLast {
         copy {
-            from "../mvn/com/github/intellectualsites/plotsquared/PlotSquared-API/${project.parent.version}/"
-            into '../mvn/com/github/intellectualsites/plotsquared/PlotSquared-API/latest/'
+            from "../mvn/com/github/intellectualsites/plotsquared/Plotsquared-Api/${project.parent.version}/"
+            into '../mvn/com/github/intellectualsites/plotsquared/Plotsquared-Api/latest/'
             include('*.jar')
-            rename("PlotSquared-API-${project.parent.version}.jar", 'PlotSquared-API-latest.jar')
+            rename("Plotsquared-Api-${project.parent.version}.jar", 'Plotsquared-Api-latest.jar')
         }
     }
 }

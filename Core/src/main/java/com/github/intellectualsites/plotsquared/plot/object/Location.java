@@ -57,11 +57,7 @@ public class Location implements Cloneable, Comparable<Location> {
     }
 
     @Override public Location clone() {
-        try {
-            return (Location) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(); //can't happen
-        }
+        return new Location(this.world, this.x, this.y, this.z, this.yaw, this.pitch);
     }
 
     public PlotArea getPlotArea() {
@@ -69,7 +65,7 @@ public class Location implements Cloneable, Comparable<Location> {
     }
 
     public Plot getOwnedPlot() {
-        PlotArea area = getPlotArea();
+        PlotArea area = PlotSquared.get().getPlotAreaAbs(this);
         if (area != null) {
             return area.getOwnedPlot(this);
         } else {
@@ -78,7 +74,7 @@ public class Location implements Cloneable, Comparable<Location> {
     }
 
     public Plot getOwnedPlotAbs() {
-        PlotArea area = getPlotArea();
+        PlotArea area = PlotSquared.get().getPlotAreaAbs(this);
         if (area != null) {
             return area.getOwnedPlotAbs(this);
         } else {
@@ -87,16 +83,16 @@ public class Location implements Cloneable, Comparable<Location> {
     }
 
     public boolean isPlotArea() {
-        return getPlotArea() != null;
+        return PlotSquared.get().getPlotAreaAbs(this) != null;
     }
 
     public boolean isPlotRoad() {
-        PlotArea area = getPlotArea();
+        PlotArea area = PlotSquared.get().getPlotAreaAbs(this);
         return area != null && area.getPlotAbs(this) == null;
     }
 
     public boolean isUnownedPlotArea() {
-        PlotArea area = getPlotArea();
+        PlotArea area = PlotSquared.get().getPlotAreaAbs(this);
         return area != null && area.getOwnedPlotAbs(this) == null;
     }
 
@@ -110,7 +106,7 @@ public class Location implements Cloneable, Comparable<Location> {
     }
 
     public Plot getPlotAbs() {
-        PlotArea area = getPlotArea();
+        PlotArea area = PlotSquared.get().getPlotAreaAbs(this);
         if (area != null) {
             return area.getPlotAbs(this);
         } else {
@@ -119,7 +115,7 @@ public class Location implements Cloneable, Comparable<Location> {
     }
 
     public Plot getPlot() {
-        PlotArea area = getPlotArea();
+        PlotArea area = PlotSquared.get().getPlotAreaAbs(this);
         if (area != null) {
             return area.getPlot(this);
         } else {

@@ -81,6 +81,10 @@ public class SingleWorldGenerator extends IndependentPlotGenerator {
         return ((SinglePlotAreaManager) PlotSquared.get().getPlotAreaManager()).getArea();
     }
 
+    @Override public PlotManager getNewPlotManager() {
+        return new SinglePlotManager();
+    }
+
     @Override public void initialize(PlotArea area) {
 
     }

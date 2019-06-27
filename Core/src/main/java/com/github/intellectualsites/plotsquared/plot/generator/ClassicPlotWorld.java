@@ -8,7 +8,6 @@ import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.object.BlockBucket;
 import com.github.intellectualsites.plotsquared.plot.object.PlotBlock;
 import com.github.intellectualsites.plotsquared.plot.object.PlotId;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
@@ -19,22 +18,21 @@ import java.util.Locale;
     public int ROAD_HEIGHT = 62;
     public int PLOT_HEIGHT = 62;
     public int WALL_HEIGHT = 62;
-    public BlockBucket MAIN_BLOCK = BlockBucket.withSingle(PlotBlock.get("stone"));
+    public BlockBucket MAIN_BLOCK = BlockBucket.withSingle(PlotBlock.get("dirt"));
     // new PlotBlock[] {PlotBlock.get("stone")};
     public BlockBucket TOP_BLOCK = BlockBucket.withSingle(PlotBlock.get("grass_block"));
     //new PlotBlock[] {PlotBlock.get("grass")};
     public BlockBucket WALL_BLOCK = BlockBucket.withSingle(PlotBlock.get("stone_slab"));
     // PlotBlock.get((short) 44, (byte) 0);
-    public BlockBucket CLAIMED_WALL_BLOCK = BlockBucket.withSingle(PlotBlock.get("sandstone_slab"));
+    public BlockBucket CLAIMED_WALL_BLOCK = BlockBucket.withSingle(PlotBlock.get("stone_brick_slab"));
     // PlotBlock.get((short) 44, (byte) 1);
     public BlockBucket WALL_FILLING = BlockBucket.withSingle(PlotBlock.get("stone"));
     //PlotBlock.get((short) 1, (byte) 0);
-    public BlockBucket ROAD_BLOCK = BlockBucket.withSingle(PlotBlock.get("quartz_block"));
+    public BlockBucket ROAD_BLOCK = BlockBucket.withSingle(PlotBlock.get("oak_planks"));
     // PlotBlock.get((short) 155, (byte) 0);
     public boolean PLOT_BEDROCK = true;
 
-    public ClassicPlotWorld(String worldName, String id,
-        @NotNull IndependentPlotGenerator generator,
+    public ClassicPlotWorld(String worldName, String id, IndependentPlotGenerator generator,
         PlotId min, PlotId max) {
         super(worldName, id, generator, min, max);
     }

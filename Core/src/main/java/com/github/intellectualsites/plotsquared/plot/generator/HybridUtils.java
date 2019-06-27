@@ -1,8 +1,7 @@
 package com.github.intellectualsites.plotsquared.plot.generator;
 
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
-import com.github.intellectualsites.plotsquared.plot.config.Settings;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.flag.FlagManager;
 import com.github.intellectualsites.plotsquared.plot.flag.Flags;
 import com.github.intellectualsites.plotsquared.plot.listener.WEExtent;
@@ -130,16 +129,6 @@ public abstract class HybridUtils {
         return scheduleRoadUpdate(area, regions, extend);
     }
 
-    public boolean scheduleSingleRegionRoadUpdate(Plot plot, int extend) {
-        if (HybridUtils.UPDATE) {
-            return false;
-        }
-        HybridUtils.UPDATE = true;
-        Set<ChunkLoc> regions = new HashSet<>();
-        regions.add(ChunkManager.manager.getChunkChunk(plot.getCenter()));
-        return scheduleRoadUpdate(plot.getArea(), regions, extend);
-    }
-
     public boolean scheduleRoadUpdate(final PlotArea area, Set<ChunkLoc> rgs, final int extend) {
         HybridUtils.regions = rgs;
         HybridUtils.area = area;
@@ -163,11 +152,8 @@ public abstract class HybridUtils {
                     PlotSquared.debug("PROGRESS: " + 100 * (2048 - chunks.size()) / 2048 + "%");
                 }
                 if (regions.isEmpty() && chunks.isEmpty()) {
-                    PlotSquared.debug("&3Regenerating plot walls");
-                    regeneratePlotWalls(area);
-
                     HybridUtils.UPDATE = false;
-                    PlotSquared.debug(Captions.PREFIX.s() + "Finished road conversion");
+                    PlotSquared.debug(C.PREFIX.s() + "Finished road conversion");
                     // CANCEL TASK
                 } else {
                     final Runnable task = this;
@@ -252,14 +238,13 @@ public abstract class HybridUtils {
         final String dir =
             "schematics" + File.separator + "GEN_ROAD_SCHEMATIC" + File.separator + plot.getArea()
                 .toString() + File.separator;
-
         SchematicHandler.manager.getCompoundTag(world, sideRoad, new RunnableVal<CompoundTag>() {
             @Override public void run(CompoundTag value) {
-                SchematicHandler.manager.save(value, dir + "sideroad.schem");
+                SchematicHandler.manager.save(value, dir + "sideroad.schematic");
                 SchematicHandler.manager
                     .getCompoundTag(world, intersection, new RunnableVal<CompoundTag>() {
                         @Override public void run(CompoundTag value) {
-                            SchematicHandler.manager.save(value, dir + "intersection.schem");
+                            SchematicHandler.manager.save(value, dir + "intersection.schematic");
                             plotworld.ROAD_SCHEMATIC_ENABLED = true;
                             try {
                                 plotworld.setupSchematics();
@@ -311,8 +296,8 @@ public abstract class HybridUtils {
             }
         }
         PlotManager manager = area.getPlotManager();
-        PlotId id1 = manager.getPlotId(x, 0, z);
-        PlotId id2 = manager.getPlotId(ex, 0, ez);
+        PlotId id1 = manager.getPlotId(plotWorld, x, 0, z);
+        PlotId id2 = manager.getPlotId(plotWorld, ex, 0, ez);
         x -= plotWorld.ROAD_OFFSET_X;
         z -= plotWorld.ROAD_OFFSET_Z;
         LocalBlockQueue queue = GlobalBlockQueue.IMP.getNewQueue(plotWorld.worldname, false);
@@ -345,7 +330,7 @@ public abstract class HybridUtils {
                         boolean condition;
                         if (toCheck) {
                             condition = manager
-                                .getPlotId(x + X + plotWorld.ROAD_OFFSET_X, 1,
+                                .getPlotId(plotWorld, x + X + plotWorld.ROAD_OFFSET_X, 1,
                                     z + Z + plotWorld.ROAD_OFFSET_Z) == null;
                             //                            condition = MainUtil.isPlotRoad(new Location(plotworld.worldname, x + X, 1, z + Z));
                         } else {
@@ -357,9 +342,7 @@ public abstract class HybridUtils {
                         }
                         if (condition) {
                             BaseBlock[] blocks = plotWorld.G_SCH.get(MathMan.pair(absX, absZ));
-                            int minY = plotWorld.SCHEM_Y;
-                            if (!Settings.Schematics.PASTE_ON_TOP)
-                                minY = 1;
+                            int minY = Math.min(plotWorld.PLOT_HEIGHT, plotWorld.ROAD_HEIGHT);
                             int maxY = Math.max(extend, blocks.length);
                             if (blocks != null) {
                                 for (int y = 0; y < maxY; y++) {
@@ -389,10 +372,5 @@ public abstract class HybridUtils {
             }
         }
         return false;
-    }
-
-    public boolean regeneratePlotWalls(final PlotArea area) {
-        PlotManager plotManager = area.getPlotManager();
-        return plotManager.regenerateAllPlotWalls();
     }
 }

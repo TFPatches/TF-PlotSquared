@@ -1,7 +1,7 @@
 package com.github.intellectualsites.plotsquared.plot.listener;
 
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.object.RegionWrapper;
 import com.sk89q.worldedit.WorldEditException;
@@ -46,22 +46,21 @@ public class ProcessedWEExtent extends AbstractDelegateExtent {
         this.parent = parent;
     }
 
-    @Override public BlockState getBlock(BlockVector3 position) {
-        if (WEManager.maskContains(this.mask, position.getX(), position.getY(), position.getZ())) {
-            return super.getBlock(position);
+    @Override public BlockState getBlock(BlockVector3 location) {
+        if (WEManager.maskContains(this.mask, location.getX(), location.getY(), location.getZ())) {
+            return super.getBlock(location);
         }
         return WEExtent.AIRSTATE;
     }
 
-    @Override public BaseBlock getFullBlock(BlockVector3 position) {
-        if (WEManager.maskContains(this.mask, position.getX(), position.getY(), position.getZ())) {
-            return super.getFullBlock(position);
+    @Override public BaseBlock getFullBlock(BlockVector3 location) {
+        if (WEManager.maskContains(this.mask, location.getX(), location.getY(), location.getZ())) {
+            return super.getFullBlock(location);
         }
         return WEExtent.AIRBASE;
     }
 
-    @Override
-    public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 location, T block)
+    @Override public boolean setBlock(BlockVector3 location, BlockStateHolder block)
         throws WorldEditException {
         String id = block.getBlockType().getId();
         switch (id) {
@@ -107,7 +106,7 @@ public class ProcessedWEExtent extends AbstractDelegateExtent {
                 if (this.BScount > Settings.Chunk_Processor.MAX_TILES) {
                     this.BSblocked = true;
                     PlotSquared.debug(
-                        Captions.PREFIX + "&cdetected unsafe WorldEdit: " + location.getX() + ","
+                        C.PREFIX + "&cdetected unsafe WorldEdit: " + location.getX() + ","
                             + location.getZ());
                 }
                 if (WEManager
@@ -162,8 +161,8 @@ public class ProcessedWEExtent extends AbstractDelegateExtent {
         if (this.Ecount > Settings.Chunk_Processor.MAX_ENTITIES) {
             this.Eblocked = true;
             PlotSquared.debug(
-                Captions.PREFIX + "&cdetected unsafe WorldEdit: " + location.getBlockX() + ","
-                    + location.getBlockZ());
+                C.PREFIX + "&cdetected unsafe WorldEdit: " + location.getBlockX() + "," + location
+                    .getBlockZ());
         }
         if (WEManager.maskContains(this.mask, location.getBlockX(), location.getBlockY(),
             location.getBlockZ())) {

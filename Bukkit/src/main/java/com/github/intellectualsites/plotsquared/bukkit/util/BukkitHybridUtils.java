@@ -70,9 +70,8 @@ public class BukkitHybridUtils extends HybridUtils {
 
             PlotArea area = PlotSquared.get().getPlotArea(world, null);
 
-            if (!(area instanceof HybridPlotWorld)) {
+            if (!(area instanceof HybridPlotWorld))
                 return;
-            }
 
             HybridPlotWorld hpw = (HybridPlotWorld) area;
             final BlockBucket[][] result = hpw.getBlockBucketChunk();
@@ -112,7 +111,7 @@ public class BukkitHybridUtils extends HybridUtils {
                 }
                 int minY;
                 if (Settings.Schematics.PASTE_ON_TOP) {
-                    minY = hpw.SCHEM_Y;
+                    minY = Math.min(hpw.PLOT_HEIGHT, hpw.ROAD_HEIGHT);
                 } else {
                     minY = 1;
                 }
@@ -304,7 +303,7 @@ public class BukkitHybridUtils extends HybridUtils {
                             }
                         }
                     }
-                    worldObj.unloadChunkRequest(X, Z);
+                    worldObj.unloadChunkRequest(X, Z, true);
                 }
             }, () -> TaskManager.runTaskAsync(run), 5);
         });

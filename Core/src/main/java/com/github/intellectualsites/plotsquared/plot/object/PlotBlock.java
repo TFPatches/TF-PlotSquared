@@ -133,6 +133,4 @@ public abstract class PlotBlock implements ConfigurationSerializable {
 
     public abstract Object getRawId();
 
-    public abstract BaseBlock getBaseBlock();
-
 }

@@ -1,12 +1,7 @@
 package com.github.intellectualsites.plotsquared.bukkit.object.entity;
 
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import org.bukkit.Art;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Rotation;
-import org.bukkit.TreeSpecies;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
@@ -14,8 +9,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
-
-import java.util.List;
 
 public final class ReplicatingEntityWrapper extends EntityWrapper {
 
@@ -45,9 +38,9 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
         if (depth == 0) {
             return;
         }
-        List<Entity> passengers = entity.getPassengers();
-        if (passengers.size() > 0) {
-            this.base.passenger = new ReplicatingEntityWrapper(passengers.get(0), depth);
+        Entity passenger = entity.getPassengers().get(0);
+        if (passenger != null) {
+            this.base.passenger = new ReplicatingEntityWrapper(passenger, depth);
         }
         this.base.fall = entity.getFallDistance();
         this.base.fire = (short) entity.getFireTicks();
@@ -68,6 +61,7 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
                 this.dataByte = getOrdinal(TreeSpecies.values(), boat.getWoodType());
                 return;
             case ARROW:
+            case COMPLEX_PART:
             case EGG:
             case ENDER_CRYSTAL:
             case ENDER_PEARL:
@@ -91,11 +85,14 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
             case MINECART_FURNACE:
             case SPLASH_POTION:
             case THROWN_EXP_BOTTLE:
+            case WEATHER:
             case WITHER_SKULL:
             case UNKNOWN:
+            case TIPPED_ARROW:
             case SPECTRAL_ARROW:
             case SHULKER_BULLET:
             case DRAGON_FIREBALL:
+            case LINGERING_POTION:
             case AREA_EFFECT_CLOUD:
             case TRIDENT:
             case LLAMA_SPIT:
@@ -148,7 +145,7 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
                     ChestedHorse horse1 = (ChestedHorse) horse;
                     this.horse.chest = horse1.isCarryingChest();
                 }
-                //todo these horse features need fixing
+                //todo these horse feeatures need fixing
                 //this.horse.variant = horse.getVariant();
                 //this.horse.style = horse.getStyle();
                 //this.horse.color = horse.getColor();
@@ -165,14 +162,9 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
                 storeLiving((LivingEntity) entity);
                 return;
             // END TAMEABLE //
-            //todo fix sheep
             case SHEEP:
                 Sheep sheep = (Sheep) entity;
-                if (sheep.isSheared()) {
-                    this.dataByte = (byte) 1;
-                } else {
-                    this.dataByte = (byte) 0;
-                }
+                this.dataByte = (byte) (sheep.isSheared() ? 1 : 0);
                 this.dataByte2 = sheep.getColor().getDyeData();
                 storeAgeable(sheep);
                 storeLiving(sheep);
@@ -287,7 +279,6 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
                     this.dataByte = (byte) 0;
                 }
                 storeLiving((LivingEntity) entity);
-                return;
                 // END LIVING //
             default:
                 PlotSquared.debug("&cCOULD NOT IDENTIFY ENTITY: " + entity.getType());
@@ -323,23 +314,20 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
         if (this.lived.leashed) {
             // TODO leashes
             //            World world = entity.getWorld();
-            //            Entity leash = world.spawnEntity(new Location(world, Math.floor(x) +
-            //            lived.leashX, Math.floor(y) + lived.leashY, Math.floor(z) + lived.leashZ),
-            //            EntityType.LEASH_HITCH);
+            //            Entity leash = world.spawnEntity(new Location(world, Math.floor(x) + lived.leashX, Math.floor(y) + lived.leashY, Math
+            // .floor(z) + lived.leashZ), EntityType.LEASH_HITCH);
             //            entity.setLeashHolder(leash);
         }
     }
 
     void restoreEquipment(LivingEntity entity) {
         EntityEquipment equipment = entity.getEquipment();
-        if (equipment != null) {
-            equipment.setItemInMainHand(this.lived.mainHand);
-            equipment.setItemInOffHand(this.lived.offHand);
-            equipment.setHelmet(this.lived.helmet);
-            equipment.setChestplate(this.lived.chestplate);
-            equipment.setLeggings(this.lived.leggings);
-            equipment.setBoots(this.lived.boots);
-        }
+        equipment.setItemInMainHand(this.lived.mainHand);
+        equipment.setItemInOffHand(this.lived.offHand);
+        equipment.setHelmet(this.lived.helmet);
+        equipment.setChestplate(this.lived.chestplate);
+        equipment.setLeggings(this.lived.leggings);
+        equipment.setBoots(this.lived.boots);
     }
 
     private void restoreInventory(InventoryHolder entity) {
@@ -350,7 +338,7 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
         }
     }
 
-    private void storeLiving(LivingEntity lived) {
+    public void storeLiving(LivingEntity lived) {
         this.lived = new LivingEntityStats();
         this.lived.potions = lived.getActivePotionEffects();
         this.lived.loot = lived.getCanPickupItems();
@@ -472,6 +460,7 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
                 ((Slime) entity).setSize(this.dataByte);
                 return entity;
             case ARROW:
+            case COMPLEX_PART:
             case EGG:
             case ENDER_CRYSTAL:
             case ENDER_PEARL:
@@ -494,8 +483,11 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
             case SNOWBALL:
             case SPLASH_POTION:
             case THROWN_EXP_BOTTLE:
+            case WEATHER:
+            case TIPPED_ARROW:
             case SPECTRAL_ARROW:
             case SHULKER_BULLET:
+            case LINGERING_POTION:
             case AREA_EFFECT_CLOUD:
             case DRAGON_FIREBALL:
             case WITHER_SKULL:
@@ -579,6 +571,14 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
                     ((Rabbit) entity).setRabbitType(Rabbit.Type.values()[this.dataByte]);
                 }
                 restoreAgeable((Ageable) entity);
+                restoreLiving((LivingEntity) entity);
+                return entity;
+            case GUARDIAN:
+            case ELDER_GUARDIAN:
+                restoreLiving((LivingEntity) entity);
+                return entity;
+            case SKELETON:
+            case WITHER_SKELETON:
                 restoreLiving((LivingEntity) entity);
                 return entity;
             case ARMOR_STAND:
@@ -676,10 +676,6 @@ public final class ReplicatingEntityWrapper extends EntityWrapper {
             case BLAZE:
             case SNOWMAN:
             case SHULKER:
-            case GUARDIAN:
-            case ELDER_GUARDIAN:
-            case SKELETON:
-            case WITHER_SKELETON:
                 restoreLiving((LivingEntity) entity);
                 return entity;
             case IRON_GOLEM:

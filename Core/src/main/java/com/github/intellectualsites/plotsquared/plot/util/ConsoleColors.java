@@ -34,6 +34,8 @@ public class ConsoleColors {
 
     public static ConsoleColor chatColor(final String color) {
         switch (color) {
+            case "&r":
+                return ConsoleColor.RESET;
             case "&7":
             case "&8":
                 return ConsoleColor.WHITE;
@@ -63,7 +65,6 @@ public class ConsoleColors {
                 return ConsoleColor.ITALIC;
             case "&l":
                 return ConsoleColor.BOLD;
-            case "&r":
             default:
                 return ConsoleColor.RESET;
         }

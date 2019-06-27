@@ -2,7 +2,7 @@ package com.github.intellectualsites.plotsquared.plot.commands;
 
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.database.DBFunc;
 import com.github.intellectualsites.plotsquared.plot.listener.PlotListener;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
@@ -38,7 +38,7 @@ import java.util.UUID;
         for (String arg : args) {
             String[] split = arg.split(":");
             if (split.length != 2) {
-                Captions.COMMAND_SYNTAX.send(player, getUsage());
+                C.COMMAND_SYNTAX.send(player, getUsage());
                 return false;
             }
             switch (split[0].toLowerCase()) {
@@ -50,7 +50,7 @@ import java.util.UUID;
                 case "a":
                     area = PlotSquared.get().getPlotAreaByString(split[1]);
                     if (area == null) {
-                        Captions.NOT_VALID_PLOT_WORLD.send(player, split[1]);
+                        C.NOT_VALID_PLOT_WORLD.send(player, split[1]);
                         return false;
                     }
                     break;
@@ -59,7 +59,7 @@ import java.util.UUID;
                     try {
                         id = PlotId.fromString(split[1]);
                     } catch (IllegalArgumentException ignored) {
-                        Captions.NOT_VALID_PLOT_ID.send(player, split[1]);
+                        C.NOT_VALID_PLOT_ID.send(player, split[1]);
                         return false;
                     }
                     break;
@@ -67,7 +67,7 @@ import java.util.UUID;
                 case "o":
                     owner = UUIDHandler.getUUID(split[1], null);
                     if (owner == null) {
-                        Captions.INVALID_PLAYER.send(player, split[1]);
+                        C.INVALID_PLAYER.send(player, split[1]);
                         return false;
                     }
                     break;
@@ -75,7 +75,7 @@ import java.util.UUID;
                 case "s":
                     added = UUIDHandler.getUUID(split[1], null);
                     if (added == null) {
-                        Captions.INVALID_PLAYER.send(player, split[1]);
+                        C.INVALID_PLAYER.send(player, split[1]);
                         return false;
                     }
                     break;
@@ -85,7 +85,7 @@ import java.util.UUID;
                     unknown = Boolean.parseBoolean(split[1]);
                     break;
                 default:
-                    Captions.COMMAND_SYNTAX.send(player, getUsage());
+                    C.COMMAND_SYNTAX.send(player, getUsage());
                     return false;
             }
         }
@@ -137,7 +137,7 @@ import java.util.UUID;
             }
         }
         if (toDelete.isEmpty()) {
-            Captions.FOUND_NO_PLOTS.send(player);
+            C.FOUND_NO_PLOTS.send(player);
             return false;
         }
         String cmd =
@@ -156,7 +156,7 @@ import java.util.UUID;
                 }
             }
             DBFunc.purgeIds(ids);
-            Captions.PURGE_SUCCESS.send(player, ids.size() + "/" + toDelete.size());
+            C.PURGE_SUCCESS.send(player, ids.size() + "/" + toDelete.size());
         };
         if (hasConfirmation(player)) {
             CmdConfirm.addPending(player, cmd, run);

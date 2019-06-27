@@ -1,58 +1,56 @@
 package com.github.intellectualsites.plotsquared.plot.commands;
 
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
-import lombok.RequiredArgsConstructor;
-
 /**
  * CommandCategory.
  */
-@RequiredArgsConstructor public enum CommandCategory {
+public enum CommandCategory {
     /**
      * Claiming CommandConfig.
      * Such as: /plot claim
      */
-    CLAIMING(Captions.COMMAND_CATEGORY_CLAIMING),
-    /**
+    CLAIMING("Claiming"), /**
      * Teleportation CommandConfig.
      * Such as: /plot visit
      */
-    TELEPORT(Captions.COMMAND_CATEGORY_TELEPPORT),
-    /**
+    TELEPORT("Teleport"), /**
      * Protection.
      */
-    SETTINGS(Captions.COMMAND_CATEGORY_SETTINGS),
-    /**
+    SETTINGS("Protection"), /**
      * Chat.
      */
-    CHAT(Captions.COMMAND_CATEGORY_CHAT),
-    /**
+    CHAT("Chat"), /**
      * Web.
      */
-    SCHEMATIC(Captions.COMMAND_CATEGORY_SCHEMATIC),
-    /**
+    SCHEMATIC("Web"), /**
      * Cosmetic.
      */
-    APPEARANCE(Captions.COMMAND_CATEGORY_APPEARANCE),
-    /**
+    APPEARANCE("Cosmetic"), /**
      * Information CommandConfig.
      * Such as: /plot info
      */
-    INFO(Captions.COMMAND_CATEGORY_INFO),
-    /**
+    INFO("Info"), /**
      * Debug CommandConfig.
      * Such as: /plot debug
      */
-    DEBUG(Captions.COMMAND_CATEGORY_DEBUG),
-    /**
+    DEBUG("Debug"), /**
      * Administration commands.
      */
-    ADMINISTRATION(Captions.COMMAND_CATEGORY_ADMINISTRATION);
+    ADMINISTRATION("Admin");
     /**
      * The category name (Readable).
      */
-    private final Captions caption;
+    private final String name;
+
+    /**
+     * Constructor.
+     *
+     * @param name readable name
+     */
+    CommandCategory(String name) {
+        this.name = name;
+    }
 
     @Override public String toString() {
-        return this.caption.s();
+        return this.name;
     }
 }

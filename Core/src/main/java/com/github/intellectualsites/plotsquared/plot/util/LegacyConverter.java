@@ -2,7 +2,7 @@ package com.github.intellectualsites.plotsquared.plot.util;
 
 import com.github.intellectualsites.plotsquared.configuration.ConfigurationSection;
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.object.BlockBucket;
 import com.github.intellectualsites.plotsquared.plot.object.PlotBlock;
 import lombok.NonNull;
@@ -51,7 +51,9 @@ import java.util.Map;
     private BlockBucket blockListToBucket(@NonNull final PlotBlock[] blocks) {
         final Map<PlotBlock, Integer> counts = new HashMap<>();
         for (final PlotBlock block : blocks) {
-            counts.putIfAbsent(block, 0);
+            if (!counts.containsKey(block)) {
+                counts.put(block, 0);
+            }
             counts.put(block, counts.get(block) + 1);
         }
         boolean includeRatios = false;
@@ -63,8 +65,9 @@ import java.util.Map;
         }
         final BlockBucket bucket = new BlockBucket();
         if (includeRatios) {
+            final double ratio = 100D / blocks.length;
             for (final Map.Entry<PlotBlock, Integer> count : counts.entrySet()) {
-                bucket.addBlock(count.getKey(), count.getValue());
+                bucket.addBlock(count.getKey(), (int) (count.getValue() * ratio));
             }
         } else {
             counts.keySet().forEach(bucket::addBlock);
@@ -81,7 +84,7 @@ import java.util.Map;
         @NonNull final String key, @NonNull final String block) {
         final BlockBucket bucket = this.blockToBucket(block);
         this.setString(section, key, bucket);
-        PlotSquared.log(Captions.LEGACY_CONFIG_REPLACED.f(block, bucket.toString()));
+        PlotSquared.log(C.LEGACY_CONFIG_REPLACED.f(block, bucket.toString()));
     }
 
     private void convertBlockList(@NonNull final ConfigurationSection section,
@@ -89,8 +92,8 @@ import java.util.Map;
         final PlotBlock[] blocks = this.splitBlockList(blockList);
         final BlockBucket bucket = this.blockListToBucket(blocks);
         this.setString(section, key, bucket);
-        PlotSquared.log(
-            Captions.LEGACY_CONFIG_REPLACED.f(plotBlockArrayString(blocks), bucket.toString()));
+        PlotSquared
+            .log(C.LEGACY_CONFIG_REPLACED.f(plotBlockArrayString(blocks), bucket.toString()));
     }
 
     private String plotBlockArrayString(@NonNull final PlotBlock[] blocks) {
@@ -110,14 +113,12 @@ import java.util.Map;
         for (final String world : worlds) {
             final ConfigurationSection worldSection = configuration.getConfigurationSection(world);
             for (final Map.Entry<String, ConfigurationType> entry : TYPE_MAP.entrySet()) {
-                if (worldSection.contains(entry.getKey())) {
-                    if (entry.getValue() == ConfigurationType.BLOCK) {
-                        this.convertBlock(worldSection, entry.getKey(),
-                            worldSection.getString(entry.getKey()));
-                    } else {
-                        this.convertBlockList(worldSection, entry.getKey(),
-                            worldSection.getStringList(entry.getKey()));
-                    }
+                if (entry.getValue() == ConfigurationType.BLOCK) {
+                    this.convertBlock(worldSection, entry.getKey(),
+                        worldSection.getString(entry.getKey()));
+                } else {
+                    this.convertBlockList(worldSection, entry.getKey(),
+                        worldSection.getStringList(entry.getKey()));
                 }
             }
         }

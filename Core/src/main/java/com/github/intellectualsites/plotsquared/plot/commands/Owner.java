@@ -1,15 +1,11 @@
 package com.github.intellectualsites.plotsquared.plot.commands;
 
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
-import com.github.intellectualsites.plotsquared.plot.util.CmdConfirm;
-import com.github.intellectualsites.plotsquared.plot.util.MainUtil;
-import com.github.intellectualsites.plotsquared.plot.util.Permissions;
-import com.github.intellectualsites.plotsquared.plot.util.TaskManager;
-import com.github.intellectualsites.plotsquared.plot.util.UUIDHandler;
+import com.github.intellectualsites.plotsquared.plot.util.*;
 
 import java.util.Set;
 import java.util.UUID;
@@ -31,14 +27,14 @@ import java.util.UUID;
             }
         } else {
             uuid = UUIDHandler.getUUID(value, null);
-            name = uuid == null ? value : UUIDHandler.getName(uuid);
+            name = UUIDHandler.getName(uuid);
             name = name == null ? value : name;
         }
         if (uuid == null || value.equalsIgnoreCase("-")) {
             if (value.equalsIgnoreCase("none") || value.equalsIgnoreCase("null") || value
                 .equalsIgnoreCase("-")) {
                 if (!Permissions
-                    .hasPermission(player, Captions.PERMISSION_ADMIN_COMMAND_SET_OWNER.s(), true)) {
+                    .hasPermission(player, C.PERMISSION_ADMIN_COMMAND_SETOWNER.s(), true)) {
                     return false;
                 }
                 Set<Plot> connected = plot.getConnectedPlots();
@@ -47,20 +43,20 @@ import java.util.UUID;
                     current.unclaim();
                     current.removeSign();
                 }
-                MainUtil.sendMessage(player, Captions.SET_OWNER);
+                MainUtil.sendMessage(player, C.SET_OWNER);
                 return true;
             }
-            Captions.INVALID_PLAYER.send(player, value);
+            C.INVALID_PLAYER.send(player, value);
             return false;
         }
         final PlotPlayer other = UUIDHandler.getPlayer(uuid);
         if (plot.isOwner(uuid)) {
-            Captions.ALREADY_OWNER.send(player, MainUtil.getName(uuid));
+            C.ALREADY_OWNER.send(player, MainUtil.getName(uuid));
             return false;
         }
-        if (!Permissions.hasPermission(player, Captions.PERMISSION_ADMIN_COMMAND_SET_OWNER)) {
+        if (!Permissions.hasPermission(player, C.PERMISSION_ADMIN_COMMAND_SETOWNER)) {
             if (other == null) {
-                Captions.INVALID_PLAYER_OFFLINE.send(player, value);
+                C.INVALID_PLAYER_OFFLINE.send(player, value);
                 return false;
             }
             int size = plots.size();
@@ -68,7 +64,7 @@ import java.util.UUID;
                 other.getPlotCount() :
                 other.getPlotCount(plot.getWorldName())) + size;
             if (currentPlots > other.getAllowedPlots()) {
-                sendMessage(player, Captions.CANT_TRANSFER_MORE_PLOTS);
+                sendMessage(player, C.CANT_TRANSFER_MORE_PLOTS);
                 return false;
             }
         }
@@ -81,14 +77,13 @@ import java.util.UUID;
                     if (removeDenied)
                         plot.removeDenied(finalUUID);
                     plot.setSign(finalName);
-                    MainUtil.sendMessage(player, Captions.SET_OWNER);
+                    MainUtil.sendMessage(player, C.SET_OWNER);
                     if (other != null) {
-                        MainUtil.sendMessage(other, Captions.NOW_OWNER,
-                            plot.getArea() + ";" + plot.getId());
+                        MainUtil
+                            .sendMessage(other, C.NOW_OWNER, plot.getArea() + ";" + plot.getId());
                     }
-                } else {
-                    MainUtil.sendMessage(player, Captions.SET_OWNER_CANCELLED);
-                }
+                } else
+                    MainUtil.sendMessage(player, C.SET_OWNER_CANCELLED);
             }
         };
         if (hasConfirmation(player)) {

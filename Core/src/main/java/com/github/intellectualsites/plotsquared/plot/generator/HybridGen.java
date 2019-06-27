@@ -7,6 +7,8 @@ import com.github.intellectualsites.plotsquared.plot.util.MathMan;
 import com.github.intellectualsites.plotsquared.plot.util.block.ScopedLocalBlockQueue;
 import com.sk89q.worldedit.world.block.BaseBlock;
 
+import java.util.HashMap;
+
 public class HybridGen extends IndependentPlotGenerator {
 
     @Override public String getName() {
@@ -17,7 +19,7 @@ public class HybridGen extends IndependentPlotGenerator {
         short relativeZ, int x, int z, boolean isRoad) {
         int minY; // Math.min(world.PLOT_HEIGHT, world.ROAD_HEIGHT);
         if (isRoad || Settings.Schematics.PASTE_ON_TOP) {
-            minY = world.SCHEM_Y;
+            minY = Math.min(world.PLOT_HEIGHT, world.ROAD_HEIGHT);
         } else {
             minY = 1;
         }
@@ -119,6 +121,7 @@ public class HybridGen extends IndependentPlotGenerator {
             }
         }
         // generation
+        HashMap<Integer, BaseBlock[]> sch = hpw.G_SCH;
         for (short x = 0; x < 16; x++) {
             if (gx[x]) {
                 for (short z = 0; z < 16; z++) {
@@ -251,6 +254,10 @@ public class HybridGen extends IndependentPlotGenerator {
 
     @Override public PlotArea getNewPlotArea(String world, String id, PlotId min, PlotId max) {
         return new HybridPlotWorld(world, id, this, min, max);
+    }
+
+    @Override public PlotManager getNewPlotManager() {
+        return new HybridPlotManager();
     }
 
     @Override public void initialize(PlotArea area) {

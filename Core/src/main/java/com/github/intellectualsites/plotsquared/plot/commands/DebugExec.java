@@ -3,7 +3,7 @@ package com.github.intellectualsites.plotsquared.plot.commands;
 import com.github.intellectualsites.plotsquared.commands.Command;
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.database.DBFunc;
 import com.github.intellectualsites.plotsquared.plot.flag.Flag;
@@ -17,21 +17,12 @@ import com.github.intellectualsites.plotsquared.plot.util.expiry.ExpireManager;
 import com.github.intellectualsites.plotsquared.plot.util.expiry.PlotAnalysis;
 import com.google.common.io.Files;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
+import javax.script.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @CommandDeclaration(command = "debugexec", permission = "plots.admin",
     description = "Mutli-purpose debug command", aliases = {"exec", "$"},
@@ -40,8 +31,6 @@ import java.util.UUID;
     private Bindings scope;
 
     public DebugExec() {
-        init();
-/*
         try {
             if (PlotSquared.get() != null) {
                 File file = new File(PlotSquared.get().IMP.getDirectory(),
@@ -60,7 +49,6 @@ import java.util.UUID;
         } catch (IOException | ScriptException ignored) {
             ignored.printStackTrace();
         }
-*/
     }
 
     public ScriptEngine getEngine() {
@@ -78,15 +66,7 @@ import java.util.UUID;
         if (this.engine != null) {
             return;
         }
-        //create script engine manager
-        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-        //create nashorn engine
-        this.engine = scriptEngineManager.getEngineByName("nashorn");
-        try {
-            engine.eval("print('PlotSquared Scripting Test');");
-        } catch (ScriptException e) {
-            e.printStackTrace();
-        }
+        this.engine = new ScriptEngineManager(null).getEngineByName("nashorn");
         if (this.engine == null) {
             this.engine = new ScriptEngineManager(null).getEngineByName("JavaScript");
         }
@@ -116,6 +96,7 @@ import java.util.UUID;
             this.scope.put("WEManager", new WEManager());
         }
         this.scope.put("TaskManager", TaskManager.IMP);
+        this.scope.put("TitleManager", AbstractTitle.TITLE_CLASS);
         this.scope.put("ConsolePlayer", ConsolePlayer.getConsole());
         this.scope.put("SchematicHandler", SchematicHandler.manager);
         this.scope.put("ChunkManager", ChunkManager.manager);
@@ -130,7 +111,7 @@ import java.util.UUID;
         this.scope.put("MainCommand", MainCommand.getInstance());
 
         // enums
-        for (Enum<?> value : Captions.values()) {
+        for (Enum<?> value : C.values()) {
             this.scope.put("C_" + value.name(), value);
         }
     }
@@ -148,7 +129,7 @@ import java.util.UUID;
                 case "analyze": {
                     Plot plot = player.getCurrentPlot();
                     if (plot == null) {
-                        MainUtil.sendMessage(player, Captions.NOT_IN_PLOT);
+                        MainUtil.sendMessage(player, C.NOT_IN_PLOT);
                         return false;
                     }
                     PlotAnalysis analysis = plot.getComplexity(null);
@@ -167,7 +148,7 @@ import java.util.UUID;
                 }
                 case "calibrate-analysis":
                     if (args.length != 2) {
-                        MainUtil.sendMessage(player, Captions.COMMAND_SYNTAX,
+                        MainUtil.sendMessage(player, C.COMMAND_SYNTAX,
                             "/plot debugexec analyze <threshold>");
                         MainUtil.sendMessage(player,
                             "$1<threshold> $2= $1The percentage of plots you want to clear (100 clears 100% of plots so no point calibrating "
@@ -193,7 +174,7 @@ import java.util.UUID;
                     return MainUtil.sendMessage(player, "Cancelled task.");
                 case "remove-flag":
                     if (args.length != 2) {
-                        MainUtil.sendMessage(player, Captions.COMMAND_SYNTAX,
+                        MainUtil.sendMessage(player, C.COMMAND_SYNTAX,
                             "/plot debugexec remove-flag <flag>");
                         return false;
                     }
@@ -213,7 +194,7 @@ import java.util.UUID;
                     }
                     PlotArea area = PlotSquared.get().getPlotAreaByString(args[1]);
                     if (area == null) {
-                        MainUtil.sendMessage(player, Captions.NOT_VALID_PLOT_WORLD, args[1]);
+                        MainUtil.sendMessage(player, C.NOT_VALID_PLOT_WORLD, args[1]);
                         return false;
                     }
                     boolean result;
@@ -293,15 +274,15 @@ import java.util.UUID;
                                     DebugExec.this.engine.eval(cmd, DebugExec.this.scope);
                                 } catch (ScriptException e) {
                                     e.printStackTrace();
-                                    MainUtil.sendMessage(player, Captions.COMMAND_WENT_WRONG);
+                                    MainUtil.sendMessage(player, C.COMMAND_WENT_WRONG);
                                 }
                             }
                         };
                         return true;
                     } catch (IOException e) {
                         e.printStackTrace();
-                        MainUtil.sendMessage(player, Captions.COMMAND_SYNTAX,
-                            "/plot debugexec addcmd <file>");
+                        MainUtil
+                            .sendMessage(player, C.COMMAND_SYNTAX, "/plot debugexec addcmd <file>");
                         return false;
                     }
                 case "runasync":
@@ -341,8 +322,7 @@ import java.util.UUID;
                                 break;
                             }
                         default:
-                            Captions.COMMAND_SYNTAX
-                                .send(player, "/plot debugexec list-scripts [#]");
+                            C.COMMAND_SYNTAX.send(player, "/plot debugexec list-scripts [#]");
                             return false;
                     }
 
@@ -359,7 +339,7 @@ import java.util.UUID;
                     return true;
                 case "allcmd":
                     if (args.length < 3) {
-                        Captions.COMMAND_SYNTAX
+                        C.COMMAND_SYNTAX
                             .send(player, "/plot debugexec allcmd <condition> <command>");
                         return false;
                     }
@@ -399,8 +379,7 @@ import java.util.UUID;
                     break;
                 case "all":
                     if (args.length < 3) {
-                        Captions.COMMAND_SYNTAX
-                            .send(player, "/plot debugexec all <condition> <code>");
+                        C.COMMAND_SYNTAX.send(player, "/plot debugexec all <condition> <code>");
                         return false;
                     }
                     script =
@@ -413,7 +392,7 @@ import java.util.UUID;
                     script = StringMan.join(args, " ");
             }
             if (!(player instanceof ConsolePlayer)) {
-                MainUtil.sendMessage(player, Captions.NOT_CONSOLE);
+                MainUtil.sendMessage(player, C.NOT_CONSOLE);
                 return false;
             }
             init();

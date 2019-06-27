@@ -1,7 +1,6 @@
 package com.github.intellectualsites.plotsquared.plot.object;
 
 import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -16,7 +15,7 @@ public class StringPlotBlock extends PlotBlock {
     private static final Map<String, StringPlotBlock> STRING_PLOT_BLOCK_CACHE = new HashMap<>();
     @Getter private final String nameSpace;
     @Getter private final String itemId;
-    @Setter private BaseBlock baseBlock = null;
+    @Getter @Setter private BaseBlock baseBlock = null;
     private boolean isForeign = false;
 
     public StringPlotBlock(@NonNull final String nameSpace, @NonNull final String itemId) {
@@ -80,18 +79,14 @@ public class StringPlotBlock extends PlotBlock {
         return this.getItemId();
     }
 
-    @Override public BaseBlock getBaseBlock() {
-        if (baseBlock == null) {
-            baseBlock = BlockTypes.get(itemId).getDefaultState().toBaseBlock();
-        }
-        return baseBlock;
-    }
-
     @Override public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
             return false;
         }
         StringPlotBlock other = (StringPlotBlock) obj;

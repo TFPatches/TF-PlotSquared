@@ -35,7 +35,7 @@ public class InboxOwner extends CommentInbox {
     }
 
     @Override public boolean addComment(Plot plot, PlotComment comment) {
-        if (plot.getOwner() == null) {
+        if (plot.owner == null) {
             return false;
         }
         plot.addComment(comment);

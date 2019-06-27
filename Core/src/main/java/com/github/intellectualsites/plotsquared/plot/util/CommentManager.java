@@ -1,15 +1,11 @@
 package com.github.intellectualsites.plotsquared.plot.util;
 
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 import com.github.intellectualsites.plotsquared.plot.object.RunnableVal;
-import com.github.intellectualsites.plotsquared.plot.object.comment.CommentInbox;
-import com.github.intellectualsites.plotsquared.plot.object.comment.InboxOwner;
-import com.github.intellectualsites.plotsquared.plot.object.comment.InboxPublic;
-import com.github.intellectualsites.plotsquared.plot.object.comment.InboxReport;
-import com.github.intellectualsites.plotsquared.plot.object.comment.PlotComment;
+import com.github.intellectualsites.plotsquared.plot.object.comment.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,8 +40,8 @@ public class CommentManager {
                             total = count.get();
                         }
                         if ((size.decrementAndGet() == 0) && (total > 0)) {
-                            player.sendTitle("",
-                                Captions.INBOX_NOTIFICATION.s().replaceAll("%s", "" + total));
+                            AbstractTitle.sendTitle(player, "",
+                                C.INBOX_NOTIFICATION.s().replaceAll("%s", "" + total));
                         }
                     }
                 });

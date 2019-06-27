@@ -6,7 +6,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
 /**
- *
+
+
  */
 public class PlayerLeavePlotEvent extends PlayerEvent {
 

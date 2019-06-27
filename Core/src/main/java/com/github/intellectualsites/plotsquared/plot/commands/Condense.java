@@ -11,11 +11,7 @@ import com.github.intellectualsites.plotsquared.plot.util.MathMan;
 import com.github.intellectualsites.plotsquared.plot.util.TaskManager;
 import com.github.intellectualsites.plotsquared.plot.util.WorldUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -108,7 +104,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
                     return false;
                 }
                 MainUtil.sendMessage(player, "TASK STARTED...");
-                Condense.TASK = true;
                 Runnable run = new Runnable() {
                     @Override public void run() {
                         if (!Condense.TASK) {
@@ -131,11 +126,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
                             }
                             i++;
                             final AtomicBoolean result = new AtomicBoolean(false);
-                            result.set(origin.move(possible, () -> {
-                                if (result.get()) {
-                                    MainUtil.sendMessage(player,
-                                        "Moving: " + origin + " -> " + possible);
-                                    TaskManager.runTaskLater(task, 1);
+                            result.set(origin.move(possible, new Runnable() {
+                                @Override public void run() {
+                                    if (result.get()) {
+                                        MainUtil.sendMessage(player,
+                                            "Moving: " + origin + " -> " + possible);
+                                        TaskManager.runTaskLater(task, 1);
+                                    }
                                 }
                             }, false));
                             if (result.get()) {
@@ -152,6 +149,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
                         }
                     }
                 };
+                Condense.TASK = true;
                 TaskManager.runTaskAsync(run);
                 return true;
             }

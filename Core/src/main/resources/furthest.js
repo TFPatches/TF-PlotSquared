@@ -27,6 +27,7 @@ if (PS.hasPlotArea("%s0")) {
         }
     }
     PS.class.static.log(plot);
-} else {
+}
+else {
     PlotPlayer.sendMessage("Usage: /plot debugexec runasync furthest.js <plotworld>");
 }

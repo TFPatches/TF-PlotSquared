@@ -88,14 +88,14 @@ public class SendChunk {
             if (location == null) {
                 location = pp.getLocation();
             }
-            int chunkX = location.getX() >> 4;
-            int chunkZ = location.getZ() >> 4;
+            int cx = location.getX() >> 4;
+            int cz = location.getZ() >> 4;
             Player player = ((BukkitPlayer) pp).player;
             Object entity = this.methodGetHandlePlayer.of(player).call();
 
             for (Chunk chunk : list) {
-                int dx = Math.abs(chunkX - chunk.getX());
-                int dz = Math.abs(chunkZ - chunk.getZ());
+                int dx = Math.abs(cx - chunk.getX());
+                int dz = Math.abs(cz - chunk.getZ());
                 if ((dx > view) || (dz > view)) {
                     continue;
                 }
@@ -116,7 +116,7 @@ public class SendChunk {
         for (final Chunk chunk : chunks) {
             TaskManager.runTask(() -> {
                 try {
-                    chunk.unload(true);
+                    chunk.unload(true, false);
                 } catch (Throwable ignored) {
                     String worldName = chunk.getWorld().getName();
                     PlotSquared.debug(

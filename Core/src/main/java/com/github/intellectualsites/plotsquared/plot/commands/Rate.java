@@ -3,7 +3,7 @@ package com.github.intellectualsites.plotsquared.plot.commands;
 import com.github.intellectualsites.plotsquared.commands.Command;
 import com.github.intellectualsites.plotsquared.commands.CommandDeclaration;
 import com.github.intellectualsites.plotsquared.plot.PlotSquared;
-import com.github.intellectualsites.plotsquared.plot.config.Captions;
+import com.github.intellectualsites.plotsquared.plot.config.C;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.database.DBFunc;
 import com.github.intellectualsites.plotsquared.plot.flag.Flags;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @CommandDeclaration(command = "rate", permission = "plots.rate", description = "Rate the plot",
     usage = "/plot rate [#|next|purge]", aliases = "rt", category = CommandCategory.INFO,
-    requiredType = RequiredType.PLAYER) public class Rate extends SubCommand {
+    requiredType = RequiredType.NONE) public class Rate extends SubCommand {
 
     @Override public boolean onCommand(final PlotPlayer player, String[] args) {
         if (args.length == 1) {
@@ -48,50 +48,48 @@ import java.util.UUID;
                             .isBasePlot() && (!p.getRatings().containsKey(uuid)) && !p
                             .isAdded(uuid)) {
                             p.teleportPlayer(player);
-                            MainUtil.sendMessage(player, Captions.RATE_THIS);
+                            MainUtil.sendMessage(player, C.RATE_THIS);
                             return true;
                         }
                     }
-                    MainUtil.sendMessage(player, Captions.FOUND_NO_PLOTS);
+                    MainUtil.sendMessage(player, C.FOUND_NO_PLOTS);
                     return false;
                 }
                 case "purge": {
                     final Plot plot = player.getCurrentPlot();
                     if (plot == null) {
-                        return !sendMessage(player, Captions.NOT_IN_PLOT);
+                        return !sendMessage(player, C.NOT_IN_PLOT);
                     }
-                    if (!Permissions
-                        .hasPermission(player, Captions.PERMISSION_ADMIN_COMMAND_RATE, true)) {
+                    if (!Permissions.hasPermission(player, C.PERMISSION_ADMIN_COMMAND_RATE, true)) {
                         return false;
                     }
                     plot.clearRatings();
-                    Captions.RATINGS_PURGED.send(player);
+                    C.RATINGS_PURGED.send(player);
                     return true;
                 }
             }
         }
         final Plot plot = player.getCurrentPlot();
         if (plot == null) {
-            return !sendMessage(player, Captions.NOT_IN_PLOT);
+            return !sendMessage(player, C.NOT_IN_PLOT);
         }
         if (!plot.hasOwner()) {
-            sendMessage(player, Captions.RATING_NOT_OWNED);
+            sendMessage(player, C.RATING_NOT_OWNED);
             return false;
         }
         if (plot.isOwner(player.getUUID())) {
-            sendMessage(player, Captions.RATING_NOT_YOUR_OWN);
+            sendMessage(player, C.RATING_NOT_YOUR_OWN);
             return false;
         }
         if (Settings.Done.REQUIRED_FOR_RATINGS && !plot.hasFlag(Flags.DONE)) {
-            sendMessage(player, Captions.RATING_NOT_DONE);
+            sendMessage(player, C.RATING_NOT_DONE);
             return false;
         }
         if (Settings.Ratings.CATEGORIES != null && !Settings.Ratings.CATEGORIES.isEmpty()) {
             final Runnable run = new Runnable() {
                 @Override public void run() {
                     if (plot.getRatings().containsKey(player.getUUID())) {
-                        sendMessage(player, Captions.RATING_ALREADY_EXISTS,
-                            plot.getId().toString());
+                        sendMessage(player, C.RATING_ALREADY_EXISTS, plot.getId().toString());
                         return;
                     }
                     final MutableInt index = new MutableInt(0);
@@ -107,14 +105,14 @@ import java.util.UUID;
                                     EventUtil.manager.callRating(this.player, plot, new Rating(rV));
                                 if (result != null) {
                                     plot.addRating(this.player.getUUID(), result);
-                                    sendMessage(this.player, Captions.RATING_APPLIED,
+                                    sendMessage(this.player, C.RATING_APPLIED,
                                         plot.getId().toString());
                                     if (Permissions
-                                        .hasPermission(this.player, Captions.PERMISSION_COMMENT)) {
+                                        .hasPermission(this.player, C.PERMISSION_COMMENT)) {
                                         Command command =
                                             MainCommand.getInstance().getCommand(Comment.class);
                                         if (command != null) {
-                                            MainUtil.sendMessage(this.player, Captions.COMMENT_THIS,
+                                            MainUtil.sendMessage(this.player, C.COMMENT_THIS,
                                                 command.getUsage());
                                         }
                                     }
@@ -151,7 +149,7 @@ import java.util.UUID;
             return true;
         }
         if (args.length < 1) {
-            sendMessage(player, Captions.RATING_NOT_VALID);
+            sendMessage(player, C.RATING_NOT_VALID);
             return true;
         }
         String arg = args[0];
@@ -159,23 +157,23 @@ import java.util.UUID;
         if (MathMan.isInteger(arg) && arg.length() < 3 && !arg.isEmpty()) {
             rating = Integer.parseInt(arg);
             if (rating > 10 || rating < 1) {
-                sendMessage(player, Captions.RATING_NOT_VALID);
+                sendMessage(player, C.RATING_NOT_VALID);
                 return false;
             }
         } else {
-            sendMessage(player, Captions.RATING_NOT_VALID);
+            sendMessage(player, C.RATING_NOT_VALID);
             return false;
         }
         final UUID uuid = player.getUUID();
         final Runnable run = () -> {
             if (plot.getRatings().containsKey(uuid)) {
-                sendMessage(player, Captions.RATING_ALREADY_EXISTS, plot.getId().toString());
+                sendMessage(player, C.RATING_ALREADY_EXISTS, plot.getId().toString());
                 return;
             }
             Rating result = EventUtil.manager.callRating(player, plot, new Rating(rating));
             if (result != null) {
                 plot.addRating(uuid, result);
-                sendMessage(player, Captions.RATING_APPLIED, plot.getId().toString());
+                sendMessage(player, C.RATING_APPLIED, plot.getId().toString());
             }
         };
         if (plot.getSettings().ratings == null) {
