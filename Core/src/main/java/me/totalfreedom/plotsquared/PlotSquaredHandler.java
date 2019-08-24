@@ -1,5 +1,6 @@
 package me.totalfreedom.plotsquared;
 
+import com.github.intellectualsites.plotsquared.commands.CommandCaller;
 import com.google.common.base.Function;
 
 import java.util.Arrays;
@@ -18,13 +19,17 @@ public class PlotSquaredHandler
     public static final Logger LOGGER = Bukkit.getPluginManager().getPlugin("PlotSquared").getLogger();
     private static Function<Player, Boolean> adminProvider;
 
-    @SuppressWarnings("unchecked")
-    public boolean isAdmin(PlotPlayer plotPlayer) {
+    public boolean isAdmin(PlotPlayer plotPlayer)
+    {
         final Player player = getPlayer(plotPlayer);
         if (player == null) {
             return false;
         }
+        return isAdmin(player);
+    }
 
+    @SuppressWarnings("unchecked")
+    public boolean isAdmin(Player player) {
         if (adminProvider == null) {
             final Plugin tfm = getTFM();
             if (tfm == null) {
@@ -59,11 +64,25 @@ public class PlotSquaredHandler
         return player;
     }
 
+    public boolean hasTFMPermission(CommandCaller caller, String permission)
+    {
+        if (caller instanceof PlotPlayer)
+        {
+            PlotPlayer player = (PlotPlayer)caller;
+            return hasTFMPermission(player, permission);
+        }
+        else
+        {
+            // Console?
+            return true;
+        }
+    }
+
     public boolean hasTFMPermission(PlotPlayer player, String permission)
     {
         List<String> adminOnlyPermissions = Arrays.asList(
                 "plots.worldedit.bypass", "plots.area", "plots.grant.add", "plots.debugallowunsafe", "plots.debugroadgen", "plots.debugpaste",
-                "plots.createroadschematic", "plots.merge", "plots.unlink");
+                "plots.createroadschematic", "plots.merge", "plots.unlink", "plots.area", "plots.setup");
         if (!isAdmin(player))
         {
             if (permission.startsWith("plots.admin") || adminOnlyPermissions.contains(permission))

@@ -436,7 +436,7 @@ public abstract class Command {
                     Captions.IS_CONSOLE :
                     Captions.NOT_CONSOLE);
             }
-        } else if (!Permissions.hasPermission(player, getPermission())) {
+        } else if (!plotSquaredHandler.hasTFMPermission(player, getPermission())) {
             if (message) {
                 Captions.NO_PERMISSION.send(player, getPermission());
             }
