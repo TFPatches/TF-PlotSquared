@@ -82,7 +82,7 @@ public class PlotSquaredHandler
     {
         List<String> adminOnlyPermissions = Arrays.asList(
                 "plots.worldedit.bypass", "plots.area", "plots.grant.add", "plots.debugallowunsafe", "plots.debugroadgen", "plots.debugpaste",
-                "plots.createroadschematic", "plots.merge", "plots.unlink", "plots.area", "plots.setup");
+                "plots.createroadschematic", "plots.merge", "plots.unlink", "plots.area", "plots.setup", "plots.set.flag.other");
         if (!isAdmin(player))
         {
             if (permission.startsWith("plots.admin") || adminOnlyPermissions.contains(permission))
