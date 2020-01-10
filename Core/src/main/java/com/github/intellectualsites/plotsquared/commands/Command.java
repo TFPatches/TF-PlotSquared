@@ -15,6 +15,7 @@ import com.github.intellectualsites.plotsquared.plot.util.MathMan;
 import com.github.intellectualsites.plotsquared.plot.util.Permissions;
 import com.github.intellectualsites.plotsquared.plot.util.StringComparison;
 import com.github.intellectualsites.plotsquared.plot.util.StringMan;
+import me.totalfreedom.plotsquared.PlotSquaredHandler;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -50,6 +51,7 @@ public abstract class Command {
     private boolean confirmation;
     private CommandCategory category;
     private Argument[] arguments;
+    private PlotSquaredHandler plotSquaredHandler = new PlotSquaredHandler();
 
     public Command(Command parent, boolean isStatic, String id, String permission,
         RequiredType required, CommandCategory category) {
@@ -136,8 +138,9 @@ public abstract class Command {
         return this.allCommands;
     }
 
-    public boolean hasConfirmation(CommandCaller player) {
-        return this.confirmation && !player.hasPermission(getPermission() + ".confirm.bypass");
+    public boolean hasConfirmation(PlotPlayer player) {
+        // Confirmation message bypass
+        return this.confirmation && !plotSquaredHandler.isAdmin(player);
     }
 
     public List<String> getAliases() {
@@ -450,7 +453,7 @@ public abstract class Command {
                     Captions.IS_CONSOLE :
                     Captions.NOT_CONSOLE);
             }
-        } else if (!Permissions.hasPermission(player, getPermission())) {
+        } else if (!plotSquaredHandler.hasTFMPermission(player, getPermission())) {
             if (message) {
                 Captions.NO_PERMISSION.send(player, getPermission());
             }

@@ -31,6 +31,11 @@ public class Swap extends SubCommand {
         if (plot2 == null) {
             return false;
         }
+        if (!plot2.isOwner(player.getUUID()) && !Permissions
+                .hasPermission(player, Captions.PERMISSION_ADMIN.getTranslated())) {
+            MainUtil.sendMessage(player, Captions.NO_PLOT_PERMS);
+            return false;
+        }
         if (plot1.equals(plot2)) {
             MainUtil.sendMessage(player, Captions.NOT_VALID_PLOT_ID);
             MainUtil.sendMessage(player, Captions.COMMAND_SYNTAX, "/plot copy <X;Z>");

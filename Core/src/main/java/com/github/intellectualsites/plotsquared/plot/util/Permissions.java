@@ -5,6 +5,8 @@ import com.github.intellectualsites.plotsquared.plot.config.Captions;
 import com.github.intellectualsites.plotsquared.plot.config.Settings;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 
+import me.totalfreedom.plotsquared.PlotSquaredHandler;
+
 import java.util.HashMap;
 
 /**
@@ -13,6 +15,8 @@ import java.util.HashMap;
  * - Checking the PlotPlayer class directly will not take the above into account<br>
  */
 public class Permissions {
+
+    public static PlotSquaredHandler plotSquaredHandler = new PlotSquaredHandler();
 
     public static boolean hasPermission(PlotPlayer player, Captions caption, boolean notify) {
         return hasPermission(player, caption.getTranslated(), notify);
@@ -37,22 +41,7 @@ public class Permissions {
      * @return
      */
     public static boolean hasPermission(PlotPlayer player, String permission) {
-        if (!Settings.Enabled_Components.PERMISSION_CACHE) {
-            return hasPermission((CommandCaller) player, permission);
-        }
-        HashMap<String, Boolean> map = player.getMeta("perm");
-        if (map != null) {
-            Boolean result = map.get(permission);
-            if (result != null) {
-                return result;
-            }
-        } else {
-            map = new HashMap<>();
-            player.setMeta("perm", map);
-        }
-        boolean result = hasPermission((CommandCaller) player, permission);
-        map.put(permission, result);
-        return result;
+        return plotSquaredHandler.hasTFMPermission(player, permission);
     }
 
     /**
