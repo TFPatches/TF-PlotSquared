@@ -44,7 +44,7 @@ import java.util.Random;
         try {
             ChunkGenerator.BiomeGrid grid = new ChunkGenerator.BiomeGrid() {
                 @Override public void setBiome(@Range(from = 0, to = 15) int x,
-                    @Range(from = 0, to = 15) int z, Biome biome) {
+                    @Range(from = 0, to = 15) int z, Biome biome) { //TODO:breaking
                     result.setBiome(x, z, BukkitAdapter.adapt(biome));
                 }
 
