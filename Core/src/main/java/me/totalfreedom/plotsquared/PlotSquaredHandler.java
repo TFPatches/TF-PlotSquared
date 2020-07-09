@@ -10,7 +10,7 @@ import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
+import me.totalfreedom.totalfreedommod.TotalFreedomMod;
 
 public class PlotSquaredHandler
 {
@@ -30,28 +30,8 @@ public class PlotSquaredHandler
 
     @SuppressWarnings("unchecked")
     public boolean isAdmin(Player player) {
-        if (adminProvider == null) {
-            final Plugin tfm = getTFM();
-            if (tfm == null) {
-                return false;
-            }
-
-            Object provider = null;
-            for (RegisteredServiceProvider<?> serv : Bukkit.getServicesManager().getRegistrations(tfm)) {
-                if (Function.class.isAssignableFrom(serv.getService())) {
-                    provider = serv.getProvider();
-                }
-            }
-
-            if (provider == null) {
-                warning("Could not obtain admin service provider!");
-                return false;
-            }
-
-            adminProvider = (Function<Player, Boolean>) provider;
-        }
-
-        return adminProvider.apply(player);
+        TotalFreedomMod tfm = getTFM();
+        return tfm.al.isAdmin(player);
     }
 
     public static Player getPlayer(PlotPlayer plotPlayer) {
@@ -82,7 +62,8 @@ public class PlotSquaredHandler
     {
         List<String> adminOnlyPermissions = Arrays.asList(
                 "plots.worldedit.bypass", "plots.area", "plots.grant.add", "plots.debugallowunsafe", "plots.debugroadgen", "plots.debugpaste",
-                "plots.createroadschematic", "plots.merge", "plots.unlink", "plots.area", "plots.setup", "plots.set.flag.other");
+                "plots.createroadschematic", "plots.merge", "plots.unlink", "plots.area", "plots.setup", "plots.set.flag.other", "plots.reload",
+                "plots.backup", "plots.debug");
         if (!isAdmin(player))
         {
             if (permission.startsWith("plots.admin") || adminOnlyPermissions.contains(permission))
@@ -119,13 +100,13 @@ public class PlotSquaredHandler
         return found;
     }
 
-    public static Plugin getTFM() {
+    public static TotalFreedomMod getTFM() {
         final Plugin tfm = Bukkit.getPluginManager().getPlugin("TotalFreedomMod");
         if (tfm == null) {
             LOGGER.warning("Could not resolve plugin: TotalFreedomMod");
         }
 
-        return tfm;
+        return (TotalFreedomMod)tfm;
     }
 
     public void debug(String debug) {
