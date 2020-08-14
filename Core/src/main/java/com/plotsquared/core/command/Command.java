@@ -36,6 +36,7 @@ import com.plotsquared.core.util.StringMan;
 import com.plotsquared.core.util.task.RunnableVal2;
 import com.plotsquared.core.util.task.RunnableVal3;
 import lombok.SneakyThrows;
+import me.totalfreedom.plotsquared.PlotSquaredHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -57,6 +58,7 @@ public abstract class Command {
     private final ArrayList<Command> allCommands = new ArrayList<>();
     private final ArrayList<Command> dynamicCommands = new ArrayList<>();
     private final HashMap<String, Command> staticCommands = new HashMap<>();
+    private PlotSquaredHandler plotSquaredHandler = new PlotSquaredHandler();
 
     // Parent command (may be null)
     private final Command parent;
@@ -159,7 +161,8 @@ public abstract class Command {
     }
 
     public boolean hasConfirmation(CommandCaller player) {
-        return this.confirmation && !player.hasPermission(getPermission() + ".confirm.bypass");
+        // Confirmation message bypass
+        return this.confirmation && !plotSquaredHandler.isAdmin(player);
     }
 
     public List<String> getAliases() {
@@ -451,7 +454,7 @@ public abstract class Command {
                     Captions.IS_CONSOLE :
                     Captions.NOT_CONSOLE);
             }
-        } else if (!Permissions.hasPermission(player, getPermission())) {
+        } else if (!plotSquaredHandler.hasTFMPermission(player, getPermission())) {
             if (message) {
                 Captions.NO_PERMISSION.send(player, getPermission());
             }
