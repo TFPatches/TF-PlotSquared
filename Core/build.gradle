@@ -1,12 +1,10 @@
 repositories {
     maven { url = "https://jitpack.io" }
     maven { url = "https://mvn.intellectualsites.com/content/repositories/snapshots" }
-    maven {
-        name = "spigot"
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    }
-    maven { url 'https://rayzr.dev/repo/' }
-    maven { url "https://repo.dmulloy2.net/nexus/repository/public/" }
+    maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+    maven { url = "https://rayzr.dev/repo/" }
+    maven { url = "https://repo.dmulloy2.net/nexus/repository/public/" }
+    maven { url = "https://telesphoreo.me/repo/maven" }
 }
 def textVersion = "3.0.2"
 
@@ -25,7 +23,7 @@ dependencies {
     implementation("org.jetbrains:annotations:19.0.0")
     implementation("org.khelekore:prtree:1.7.0-SNAPSHOT")
     implementation("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT")
-    implementation("com.github.TFPatches:TotalFreedomMod:server-SNAPSHOT")
+    implementation("me.totalfreedom:TotalFreedomMod:2020.9")
 }
 
 sourceCompatibility = 1.8

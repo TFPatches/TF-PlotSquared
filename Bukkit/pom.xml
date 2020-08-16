@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.plotsquared</groupId>
       <artifactId>PlotSquared-Core</artifactId>
-      <version>5.13.1</version>
+      <version>5.13.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -150,6 +150,12 @@
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
       <version>1.16.1-R0.1-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.totalfreedom</groupId>
+      <artifactId>TotalFreedomMod</artifactId>
+      <version>2020.9</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

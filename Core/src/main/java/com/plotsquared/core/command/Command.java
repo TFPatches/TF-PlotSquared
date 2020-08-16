@@ -30,7 +30,6 @@ import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.message.PlotMessage;
 import com.plotsquared.core.util.MainUtil;
 import com.plotsquared.core.util.MathMan;
-import com.plotsquared.core.util.Permissions;
 import com.plotsquared.core.util.StringComparison;
 import com.plotsquared.core.util.StringMan;
 import com.plotsquared.core.util.task.RunnableVal2;
@@ -162,7 +161,7 @@ public abstract class Command {
 
     public boolean hasConfirmation(CommandCaller player) {
         // Confirmation message bypass
-        return this.confirmation && !plotSquaredHandler.isAdmin(player);
+        return this.confirmation && !plotSquaredHandler.isStaff(player);
     }
 
     public List<String> getAliases() {
