@@ -180,7 +180,9 @@ public class Visit extends Command {
                             Captions.COMMAND_SYNTAX.send(player, getUsage());
                         } else {
                             final UUID uuid = uuids.toArray(new UUID[0])[0];
-                            this.visit(player, PlotQuery.newQuery().ownedBy(uuid).whereBasePlot(), finalSortByArea, confirm, whenDone, finalPage1);
+                            this.visit(player, PlotQuery.newQuery()
+                                    .thatPasses(plot -> plot.isOwner(uuid)),
+                                    finalSortByArea, confirm, whenDone, finalPage1);
                         }
                     });
                     break;
@@ -209,7 +211,7 @@ public class Visit extends Command {
                                 MainUtil.sendMessage(player, Captions.INVALID_PLAYER, finalArgs[0]);
                             }
                         } else {
-                            this.visit(player, PlotQuery.newQuery().ownedBy(uuid).whereBasePlot(), null, confirm, whenDone, finalPage);
+                            this.visit(player, PlotQuery.newQuery().thatPasses(plot -> plot.isOwner(uuid)).whereBasePlot(), null, confirm, whenDone, finalPage);
                         }
                     });
                 } else {
@@ -262,27 +264,4 @@ public class Visit extends Command {
 
         return completions;
     }
-
-    private void completeNumbers(final List<Command> commands, final String arg, final int start) {
-        for (int i = 0; i < 100; i++) {
-            final String command = Integer.toString(start + 1);
-            if (!command.toLowerCase().startsWith(arg.toLowerCase())) {
-                continue;
-            }
-            commands.add(new Command(this, false, command, "",
-                RequiredType.NONE, CommandCategory.TELEPORT) {});
-        }
-    }
-
-    private void completeAreas(final List<Command> commands, final String arg) {
-        for (final PlotArea area : PlotSquared.get().getPlotAreas()) {
-            final String areaName = area.getWorldName() + ";" + area.getId();
-            if (!areaName.toLowerCase().startsWith(arg.toLowerCase())) {
-                continue;
-            }
-            commands.add(new Command(this, false, area.getWorldName() + ";" + area.getId(), "",
-                RequiredType.NONE, CommandCategory.TELEPORT) {});
-        }
-    }
-
 }
