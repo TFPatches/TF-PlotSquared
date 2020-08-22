@@ -147,15 +147,15 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
-      <version>1.16.2-R0.1-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>me.totalfreedom</groupId>
       <artifactId>TotalFreedomMod</artifactId>
       <version>2020.9</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.16.2-R0.1-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
