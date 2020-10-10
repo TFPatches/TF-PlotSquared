@@ -12,8 +12,8 @@ repositories {
         url = "https://papermc.io/repo/repository/maven-public/"
     }
     maven { url = "https://ci.ender.zone/plugin/repository/everything/" }
+    maven { url = "https://mvn.intellectualsites.com/content/repositories/releases" }
     maven { url = "https://mvn.intellectualsites.com/content/repositories/snapshots" }
-    maven { url = "https://repo.wea-ondara.net/repository/public/" }
     maven { url = "http://repo.mvdw-software.be/content/groups/public/" }
     mavenLocal()
 }
@@ -27,7 +27,6 @@ dependencies {
     implementation("org.spigotmc:spigot-api:1.16.2-R0.1-SNAPSHOT")
     compile(group: "com.sk89q.worldedit", name: "worldedit-bukkit", version: "7.2.0-SNAPSHOT") {
         exclude(module: "bukkit")
-
     }
     compile("io.papermc:paperlib:1.0.4")
     implementation("net.kyori:text-adapter-bukkit:3.0.3")
@@ -39,10 +38,9 @@ dependencies {
     implementation("net.ess3:EssentialsX:2.18.0") {
         exclude(group: "io.papermc", module: "paperlib")
     }
-    implementation("net.alpenblock:BungeePerms:4.0-dev-106")
     compile("se.hyperver.hyperverse:Core:0.6.0-SNAPSHOT"){ transitive = false }
     compile('com.sk89q:squirrelid:1.0.0-SNAPSHOT'){ transitive = false }
-    compile('be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT'){ transitive = false }
+    compile('be.maximvdw:MVdWPlaceholderAPI:3.1.1'){ transitive = false }
 }
 
 sourceCompatibility = 1.8
