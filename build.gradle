@@ -91,7 +91,7 @@ subprojects {
         testAnnotationProcessor("org.projectlombok:lombok:1.18.8")
         testImplementation("junit:junit:4.13")
         implementation("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT")
-        implementation("me.totalfreedom:TotalFreedomMod:2020.9")
+        implementation("me.totalfreedom:TotalFreedomMod:2020.11")
     }
 
     configurations.all {

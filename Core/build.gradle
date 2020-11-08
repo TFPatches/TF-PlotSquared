@@ -23,7 +23,7 @@ dependencies {
     implementation("org.jetbrains:annotations:20.1.0")
     implementation("org.khelekore:prtree:1.7.0-SNAPSHOT")
     implementation("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT")
-    implementation("me.totalfreedom:TotalFreedomMod:2020.9")
+    implementation("me.totalfreedom:TotalFreedomMod:2020.11")
 }
 
 sourceCompatibility = 1.8
